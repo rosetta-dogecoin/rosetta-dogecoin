@@ -1,11 +1,7 @@
-<p align="center">
-  <a href="https://www.rosetta-api.org">
-    <img width="90%" alt="Rosetta" src="https://www.rosetta-api.org/img/rosetta_header.png">
-  </a>
-</p>
-<h3 align="center">
-   Rosetta Bitcoin
-</h3>
+Dogecoin Rosetta API implementation
+====================================
+
+<!--
 <p align="center">
   <a href="https://circleci.com/gh/coinbase/rosetta-bitcoin/tree/master"><img src="https://circleci.com/gh/coinbase/rosetta-bitcoin/tree/master.svg?style=shield" /></a>
   <a href="https://coveralls.io/github/coinbase/rosetta-bitcoin"><img src="https://coveralls.io/repos/github/coinbase/rosetta-bitcoin/badge.svg" /></a>
@@ -13,22 +9,25 @@
   <a href="https://github.com/coinbase/rosetta-bitcoin/blob/master/LICENSE.txt"><img src="https://img.shields.io/github/license/coinbase/rosetta-bitcoin.svg" /></a>
   <a href="https://pkg.go.dev/github.com/coinbase/rosetta-bitcoin?tab=overview"><img src="https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white&style=shield" /></a>
 </p>
+-->
 
 <p align="center"><b>
-ROSETTA-BITCOIN IS CONSIDERED <a href="https://en.wikipedia.org/wiki/Software_release_life_cycle#Alpha">ALPHA SOFTWARE</a>.
-USE AT YOUR OWN RISK! COINBASE ASSUMES NO RESPONSIBILITY NOR LIABILITY IF THERE IS A BUG IN THIS IMPLEMENTATION.
+ROSETTA-DOGECOIN IS UNDER INITIAL DEVELOPMENT AND IF IT IS NOT BROKEN, THIS IS ACCIDENTAL.
+DO NOT USE THIS SOFTWARE, YET.
 </b></p>
 
 ## Overview
-`rosetta-bitcoin` provides a reference implementation of the Rosetta API for
-Bitcoin in Golang. If you haven't heard of the Rosetta API, you can find more
-information [here](https://rosetta-api.org).
+`rosetta-dogecoin` provides an implementation of the Rosetta API for
+Dogecoin in golang, based off the [rosetta-bitcoin](https://github.com/coinbase/rosetta-bitcoin)
+reference implementation provided by Coinbase. If you haven't heard of the
+Rosetta API, you can find more information [here](https://rosetta-api.org).
 
-## Features
+## Target features for v1.0
 * Rosetta API implementation (both Data API and Construction API)
 * UTXO cache for all accounts (accessible using `/account/balance`)
-* Stateless, offline, curve-based transaction construction from any SegWit-Bech32 Address
+<!--* Stateless, offline, curve-based transaction construction from any SegWit-Bech32 Address-->
 
+<!--
 ## Usage
 As specified in the [Rosetta API Principles](https://www.rosetta-api.org/docs/automated_deployment.html),
 all Rosetta implementations must be deployable via Docker and support running via either an
@@ -38,14 +37,14 @@ all Rosetta implementations must be deployable via Docker and support running vi
 DOCKER [HERE](https://www.docker.com/get-started).**
 
 ### Install
-Running the following commands will create a Docker image called `rosetta-bitcoin:latest`.
+Running the following commands will create a Docker image called `rosetta-dogecoin:latest`.
 
 #### From GitHub
 To download the pre-built Docker image from the latest release, run:
 ```text
-curl -sSfL https://raw.githubusercontent.com/coinbase/rosetta-bitcoin/master/install.sh | sh -s
+curl -sSfL https://raw.githubusercontent.com/rosetta-dogecoin/rosetta-dogecoin/master/install.sh | sh -s
 ```
-_Do not try to install rosetta-bitcoin using GitHub Packages!_
+_Do not try to install rosetta-dogecoin using GitHub Packages!_
 
 #### From Source
 After cloning this repository, run:
@@ -113,10 +112,12 @@ architecture (the virtual address space easily exceeds 100s of GBs).
 If you receive a kernel OOM, you may need to increase the allocated size of swap space
 on your OS. There is a great tutorial for how to do this on Linux [here](https://linuxize.com/post/create-a-linux-swap-file/).
 
-## Architecture
-`rosetta-bitcoin` uses the `syncer`, `storage`, `parser`, and `server` package
+-->
+
+## Target Architecture
+`rosetta-dogecoin` plans to use the `syncer`, `storage`, `parser`, and `server` package
 from [`rosetta-sdk-go`](https://github.com/coinbase/rosetta-sdk-go) instead
-of a new Bitcoin-specific implementation of packages of similar functionality. Below
+of a new Dogecoin-specific implementation of packages of similar functionality. Below
 you can find a high-level overview of how everything fits together:
 ```text
                                +------------------------------------------------------------------+
@@ -128,9 +129,9 @@ you can find a high-level overview of how everything fits together:
                                |                 | +--------+                           |         |
                                +-------------------+ pruner <----------+                |         |
                                |                 | +--------+          |                |         |
-                         +-----v----+            |                     |                |         |
-                         | bitcoind |            |              +------+--------+       |         |
-                         +-----+----+            |     +--------> block_storage <----+  |         |
+                         +-----v-----+           |                     |                |         |
+                         | dogecoind |           |              +------+--------+       |         |
+                         +-----+-----+           |     +--------> block_storage <----+  |         |
                                |                 |     |        +---------------+    |  |         |
                                |                 | +---+----+                        |  |         |
                                +-------------------> syncer |                        |  |         |
@@ -156,6 +157,7 @@ you can find a high-level overview of how everything fits together:
 +-------------------------------------------------------------------------------------------+
 ```
 
+<!--
 ### Optimizations
 * Automatically prune bitcoind while indexing blocks
 * Reduce sync time with concurrent block indexing
@@ -177,7 +179,7 @@ in recently processed blocks to save to disk.
           +---------+ fetch block data / unpopulated txs |
           | block 1 <------------------------------------+
           +---------+                                    |
-       +-->   tx 1  |                                    |
+       +--/>   tx 1  |                                    |
        |  +---------+                                    |
        |  |   tx 2  |                                    |
        |  +----+----+                                    |
@@ -185,17 +187,17 @@ in recently processed blocks to save to disk.
        |       |           +---------+                   |
        |       |           | block 2 <-------------------+
        |       |           +---------+                   |
-       |       +----------->   tx 3  +--+                |
+       |       +-----------/>   tx 3  +--+                |
        |                   +---------+  |                |
-       +------------------->   tx 4  |  |                |
+       +-------------------/>   tx 4  |  |                |
        |                   +---------+  |                |
        |                                |                |
        | retrieve previously synced     |   +---------+  |
        | inputs needed for future       |   | block 3 <--+
        | blocks while waiting for       |   +---------+
-       | populated blocks to save to    +--->   tx 5  |
+       | populated blocks to save to    +---/>   tx 5  |
        | disk                               +---------+
-       +------------------------------------>   tx 6  |
+       +------------------------------------/>   tx 6  |
        |                                    +---------+
        |
        |
@@ -203,14 +205,17 @@ in recently processed blocks to save to disk.
 |  coin_storage |
 +---------------+
 ```
+-->
+
 
 ## Testing with rosetta-cli
-To validate `rosetta-bitcoin`, [install `rosetta-cli`](https://github.com/coinbase/rosetta-cli#install)
+To validate `rosetta-dogecoin`, [install `rosetta-cli`](https://github.com/coinbase/rosetta-cli#install)
 and run one of the following commands:
 * `rosetta-cli check:data --configuration-file rosetta-cli-conf/testnet/config.json`
 * `rosetta-cli check:construction --configuration-file rosetta-cli-conf/testnet/config.json`
 * `rosetta-cli check:data --configuration-file rosetta-cli-conf/mainnet/config.json`
 
+<!--
 ## Future Work
 * Publish benchamrks for sync speed, storage usage, and load testing
 * [Rosetta API `/mempool/transaction`](https://www.rosetta-api.org/docs/MempoolApi.html#mempooltransaction) implementation
@@ -219,6 +224,7 @@ and run one of the following commands:
 * Support Multi-Sig Sends
 
 _Please reach out on our [community](https://community.rosetta-api.org) if you want to tackle anything on this list!_
+-->
 
 ## Development
 * `make deps` to install dependencies
@@ -231,4 +237,4 @@ _Please reach out on our [community](https://community.rosetta-api.org) if you w
 ## License
 This project is available open source under the terms of the [Apache 2.0 License](https://opensource.org/licenses/Apache-2.0).
 
-© 2020 Coinbase
+rosetta-bitcoin is © 2020 Coinbase
