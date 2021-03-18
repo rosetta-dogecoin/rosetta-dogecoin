@@ -20,8 +20,8 @@ RUN mkdir -p /app \
 WORKDIR /app
 
 # Source: https://github.com/dogecoin/dogecoin/blob/master/doc/build-unix.md#ubuntu--debian
-RUN apt-get update && apt-get install -y automake autotools-dev bsdmainutils build-essential git libboost-all-dev \ 
-   libdb5.1-dev libdb5.1++-dev libevent-dev libssl-dev libtool pkg-config python python-pip libzmq3-dev wget
+RUN apt-get update && apt-get install -y make gcc g++ autoconf automake autotools-dev bsdmainutils build-essential git libboost-all-dev \ 
+   libdb++-dev libevent-dev libssl-dev libtool pkg-config python python-pip libzmq3-dev wget
 
 # VERSION: Dogecoin Core 1.14.3 (64 bit)
 RUN git clone https://github.com/dogecoin/dogecoin \
