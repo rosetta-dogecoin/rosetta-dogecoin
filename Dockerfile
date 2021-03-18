@@ -25,16 +25,16 @@ RUN apt-get update && apt-get install -y automake autotools-dev bsdmainutils bui
 
 # VERSION: Dogecoin Core 1.14.3 (64 bit)
 RUN git clone https://github.com/dogecoin/dogecoin \
-  && cd bitcoin \
+  && cd dogecoin \
   && git checkout f80bfe9068ac1a0619d48dad0d268894d926941e
 
-RUN cd bitcoin \
+RUN cd dogecoin \
   && ./autogen.sh \
   && ./configure --disable-tests --without-miniupnpc --without-gui --with-incompatible-bdb --disable-hardening --disable-zmq --disable-bench --disable-wallet \
   && make
 
-RUN mv bitcoin/src/bitcoind /app/dogecoind \
-  && rm -rf bitcoin
+RUN mv dogecoin/src/bitcoind /app/dogecoind \
+  && rm -rf dogecoin
 
 # Build Rosetta Server Components
 FROM ubuntu:18.04 as rosetta-builder
@@ -62,7 +62,7 @@ COPY . src
 RUN cd src \
   && go build \
   && cd .. \
-  && mv src/rosetta-dogecoin /app/rosetta-dogecoin \
+  && mv src/rosetta-bitcoin /app/rosetta-bitcoin \
   && mv src/assets/* /app \
   && rm -rf src 
 
