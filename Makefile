@@ -17,7 +17,7 @@ PWD=$(shell pwd)
 NOFILE=100000
 
 deps:
-	go get ./...
+	go get ./...n
 
 build:
 	docker build -t rosetta-dogecoin:latest https://github.com/rosetta-dogecoin/rosetta-dogecoin.git
