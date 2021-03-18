@@ -1,4 +1,4 @@
-module github.com/rosetta-dogecoin/rosetta-dogecoinn
+module github.com/rosetta-dogecoin/rosetta-dogecoin
 
 go 1.13
 
