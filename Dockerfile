@@ -19,22 +19,22 @@ RUN mkdir -p /app \
   && chown -R nobody:nogroup /app
 WORKDIR /app
 
-# Source: https://github.com/dogecoin/dogecoin/blob/master/doc/build-unix.md#ubuntu--debian
-RUN apt-get update && apt-get install -y make gcc g++ autoconf automake autotools-dev bsdmainutils build-essential git libboost-all-dev \ 
-   libdb++-dev libevent-dev libssl-dev libtool pkg-config python python-pip libzmq3-dev wget
+# Source: https://github.com/bitcoin/bitcoin/blob/master/doc/build-unix.md#ubuntu--debian
+RUN apt-get update && apt-get install -y make gcc g++ autoconf autotools-dev bsdmainutils build-essential git libboost-all-dev \
+  libcurl4-openssl-dev libdb++-dev libevent-dev libssl-dev libtool pkg-config python python-pip libzmq3-dev wget
 
-# VERSION: Dogecoin Core 1.14.3 (64 bit)
-RUN git clone https://github.com/dogecoin/dogecoin \
-  && cd dogecoin \
-  && git checkout f80bfe9068ac1a0619d48dad0d268894d926941e
+# VERSION: Bitcoin Core 0.20.1
+RUN git clone https://github.com/bitcoin/bitcoin \
+  && cd bitcoin \
+  && git checkout 7ff64311bee570874c4f0dfa18f518552188df08
 
-RUN cd dogecoin \
+RUN cd bitcoin \
   && ./autogen.sh \
   && ./configure --disable-tests --without-miniupnpc --without-gui --with-incompatible-bdb --disable-hardening --disable-zmq --disable-bench --disable-wallet \
   && make
 
-RUN mv dogecoin/src/bitcoind /app/dogecoind \
-  && rm -rf dogecoin
+RUN mv bitcoin/src/bitcoind /app/bitcoind \
+  && rm -rf bitcoin
 
 # Build Rosetta Server Components
 FROM ubuntu:18.04 as rosetta-builder
@@ -70,7 +70,7 @@ RUN cd src \
 FROM ubuntu:18.04
 
 RUN apt-get update && \
-  apt-get install --no-install-recommends -y libevent-dev libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev && \
+  apt-get install --no-install-recommends -y libevent-dev libboost-system-dev libboost-filesystem-dev libboost-test-dev libboost-thread-dev && \
   apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN mkdir -p /app \
@@ -81,7 +81,7 @@ RUN mkdir -p /app \
 WORKDIR /app
 
 # Copy binary from bitcoind-builder
-COPY --from=bitcoind-builder /app/dogecoind /app/dogecoind
+COPY --from=bitcoind-builder /app/bitcoind /app/bitcoind
 
 # Copy binary from rosetta-builder
 COPY --from=rosetta-builder /app/* /app/
@@ -89,4 +89,4 @@ COPY --from=rosetta-builder /app/* /app/
 # Set permissions for everything added to /app
 RUN chmod -R 755 /app/*
 
-CMD ["/app/rosetta-dogecoin"]
+CMD ["/app/rosetta-bitcoin"]
