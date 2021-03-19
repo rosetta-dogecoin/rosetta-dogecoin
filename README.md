@@ -1,6 +1,8 @@
 Dogecoin Rosetta API implementation
 ====================================
 
+<a href="https://github.com/rosetta-dogecoin/rosetta-dogecoin/actions/workflows/ci.yml"><img src="https://github.com/rosetta-dogecoin/rosetta-dogecoin/actions/workflows/ci.yml/badge.svg" /></a>
+
 <!--
 <p align="center">
   <a href="https://circleci.com/gh/coinbase/rosetta-bitcoin/tree/master"><img src="https://circleci.com/gh/coinbase/rosetta-bitcoin/tree/master.svg?style=shield" /></a>
