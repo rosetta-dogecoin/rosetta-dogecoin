@@ -20,27 +20,27 @@ deps:
 	go get ./...
 
 build:
-	docker build -t rosetta-bitcoin:latest https://github.com/coinbase/rosetta-bitcoin.git
+	docker build -t rosetta-dogecoin:latest https://github.com/rosetta-dogecoin/rosetta-dogecoin.git
 
 build-local:
-	docker build -t rosetta-bitcoin:latest .
+	docker build -t rosetta-dogecoin:latest .
 
 build-release:
 	# make sure to always set version with vX.X.X
-	docker build -t rosetta-bitcoin:$(version) .;
-	docker save rosetta-bitcoin:$(version) | gzip > rosetta-bitcoin-$(version).tar.gz;
+	docker build -t rosetta-dogecoin:$(version) .;
+	docker save rosetta-dogecoin:$(version) | gzip > rosetta-dogecoin-$(version).tar.gz;
 
 run-mainnet-online:
-	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8333:8333 rosetta-bitcoin:latest
+	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8333:8333 rosetta-dogecoin:latest
 
 run-mainnet-offline:
-	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-bitcoin:latest
+	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-dogecoin:latest
 
 run-testnet-online:
-	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 18333:18333 rosetta-bitcoin:latest
+	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 18333:18333 rosetta-dogecoin:latest
 
 run-testnet-offline:
-	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-bitcoin:latest
+	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-dogecoin:latest
 
 train:
 	./zstd-train.sh $(network) transaction $(data-directory)
