@@ -227,7 +227,12 @@ However, if you prefer not to use Docker during development in your own fork (e.
 
 ### With Docker
 
-coming soon...
+* `make deps` to install dependencies
+* `make test` to run tests
+* `make lint` to lint the source code
+* `make salus` to check for security concerns
+* `make build-local` to build a Docker image from the local context
+* `make coverage-local` to generate a coverage report
 
 ### Without Docker
 
@@ -239,13 +244,11 @@ https://golang.org/doc/install
 
 #### Build
 
-Build the project.
-
 `go build`
 
 #### Running
 
-coming soon...
+`MODE=OFFLINE NETWORK=TESTNET PORT=8080 ./rosetta-dogecoin -d`
 
 ## Testing
 
