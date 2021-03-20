@@ -1,6 +1,6 @@
 {
   "network": {
-    "blockchain": "Bitcoin",
+    "blockchain": "Dogecoin",
     "network": "Mainnet"
   },
   "data_directory": "cli-data",

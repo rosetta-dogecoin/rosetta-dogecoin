@@ -23,8 +23,8 @@ import (
 )
 
 const (
-	// Blockchain is Bitcoin.
-	Blockchain string = "Bitcoin"
+	// Blockchain is Dogecoin.
+	Blockchain string = "Dogecoin"
 
 	// MainnetNetwork is the value of the network
 	// in MainnetNetworkIdentifier.
