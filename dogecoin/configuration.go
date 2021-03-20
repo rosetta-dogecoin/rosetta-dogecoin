@@ -67,7 +67,6 @@ const (
 	// allFilePermissions specifies anyone can do anything
 	// to the file.
 	allFilePermissions = 0777
-
 )
 
 // LoadConfiguration attempts to create a new Configuration

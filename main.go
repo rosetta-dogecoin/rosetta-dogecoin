@@ -24,12 +24,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 	"github.com/coinbase/rosetta-bitcoin/bitcoin"
 	"github.com/coinbase/rosetta-bitcoin/configuration"
 	"github.com/coinbase/rosetta-bitcoin/indexer"
 	"github.com/coinbase/rosetta-bitcoin/services"
 	"github.com/coinbase/rosetta-bitcoin/utils"
+	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 
 	"github.com/coinbase/rosetta-sdk-go/asserter"
 	"github.com/coinbase/rosetta-sdk-go/server"
