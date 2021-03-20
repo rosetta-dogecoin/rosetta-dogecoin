@@ -209,14 +209,6 @@ in recently processed blocks to save to disk.
 ```
 -->
 
-
-## Testing with rosetta-cli
-To validate `rosetta-dogecoin`, [install `rosetta-cli`](https://github.com/coinbase/rosetta-cli#install)
-and run one of the following commands:
-* `rosetta-cli check:data --configuration-file rosetta-cli-conf/testnet/config.json`
-* `rosetta-cli check:construction --configuration-file rosetta-cli-conf/testnet/config.json`
-* `rosetta-cli check:data --configuration-file rosetta-cli-conf/mainnet/config.json`
-
 <!--
 ## Future Work
 * Publish benchamrks for sync speed, storage usage, and load testing
@@ -228,13 +220,45 @@ and run one of the following commands:
 _Please reach out on our [community](https://community.rosetta-api.org) if you want to tackle anything on this list!_
 -->
 
+
 ## Development
+
+All Rosetta implementations must be deployable via Docker and support running via either [`online` or `offline` mode](https://www.rosetta-api.org/docs/node_deployment.html#multiple-modes).
+
+However, if you prefer not to use Docker during development in your own fork (e.g for low-end machines), feel free to follow the instructions in the **Without Docker** section.
+
+### With Docker
+
 * `make deps` to install dependencies
 * `make test` to run tests
 * `make lint` to lint the source code
 * `make salus` to check for security concerns
 * `make build-local` to build a Docker image from the local context
 * `make coverage-local` to generate a coverage report
+
+### Without Docker
+
+#### Dependencies
+
+Download and install the latest (current **1.16.2**) version of Go.
+
+https://golang.org/doc/install
+
+#### Build
+
+`go build`
+
+#### Running
+
+`MODE=OFFLINE NETWORK=TESTNET PORT=8080 ./rosetta-dogecoin -d`
+
+## Testing
+
+To validate `rosetta-dogecoin`, [install `rosetta-cli`](https://github.com/coinbase/rosetta-cli#install)
+and run one of the following commands:
+* `rosetta-cli check:data --configuration-file rosetta-cli-conf/testnet/config.json`
+* `rosetta-cli check:construction --configuration-file rosetta-cli-conf/testnet/config.json`
+* `rosetta-cli check:data --configuration-file rosetta-cli-conf/mainnet/config.json`
 
 ## License
 This project is available open source under the terms of the [Apache 2.0 License](https://opensource.org/licenses/Apache-2.0).
