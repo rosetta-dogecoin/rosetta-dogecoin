@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package configuration
+package dogecoin
 
 import (
 	"errors"
@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	"github.com/coinbase/rosetta-bitcoin/bitcoin"
+	"github.com/coinbase/rosetta-bitcoin/configuration"
 
 	"github.com/coinbase/rosetta-sdk-go/storage/encoder"
 	"github.com/coinbase/rosetta-sdk-go/types"
@@ -34,27 +35,27 @@ func TestLoadConfiguration(t *testing.T) {
 		Network string
 		Port    string
 
-		cfg *Configuration
+		cfg *configuration.Configuration
 		err error
 	}{
 		"no envs set": {
 			err: errors.New("MODE must be populated"),
 		},
 		"only mode set": {
-			Mode: string(Online),
+			Mode: string(configuration.Online),
 			err:  errors.New("NETWORK must be populated"),
 		},
 		"only mode and network set": {
-			Mode:    string(Online),
-			Network: Mainnet,
+			Mode:    string(configuration.Online),
+			Network: configuration.Mainnet,
 			err:     errors.New("PORT must be populated"),
 		},
 		"all set (mainnet)": {
-			Mode:    string(Online),
-			Network: Mainnet,
+			Mode:    string(configuration.Online),
+			Network: configuration.Mainnet,
 			Port:    "1000",
-			cfg: &Configuration{
-				Mode: Online,
+			cfg: &configuration.Configuration{
+				Mode: configuration.Online,
 				Network: &types.NetworkIdentifier{
 					Network:    bitcoin.MainnetNetwork,
 					Blockchain: bitcoin.Blockchain,
@@ -65,7 +66,7 @@ func TestLoadConfiguration(t *testing.T) {
 				Port:                   1000,
 				RPCPort:                mainnetRPCPort,
 				ConfigPath:             mainnetConfigPath,
-				Pruning: &PruningConfiguration{
+				Pruning: &configuration.PruningConfiguration{
 					Frequency: pruneFrequency,
 					Depth:     pruneDepth,
 					MinHeight: minPruneHeight,
@@ -79,11 +80,11 @@ func TestLoadConfiguration(t *testing.T) {
 			},
 		},
 		"all set (testnet)": {
-			Mode:    string(Online),
-			Network: Testnet,
+			Mode:    string(configuration.Online),
+			Network: configuration.Testnet,
 			Port:    "1000",
-			cfg: &Configuration{
-				Mode: Online,
+			cfg: &configuration.Configuration{
+				Mode: configuration.Online,
 				Network: &types.NetworkIdentifier{
 					Network:    bitcoin.TestnetNetwork,
 					Blockchain: bitcoin.Blockchain,
@@ -94,7 +95,7 @@ func TestLoadConfiguration(t *testing.T) {
 				Port:                   1000,
 				RPCPort:                testnetRPCPort,
 				ConfigPath:             testnetConfigPath,
-				Pruning: &PruningConfiguration{
+				Pruning: &configuration.PruningConfiguration{
 					Frequency: pruneFrequency,
 					Depth:     pruneDepth,
 					MinHeight: minPruneHeight,
@@ -109,19 +110,19 @@ func TestLoadConfiguration(t *testing.T) {
 		},
 		"invalid mode": {
 			Mode:    "bad mode",
-			Network: Testnet,
+			Network: configuration.Testnet,
 			Port:    "1000",
 			err:     errors.New("bad mode is not a valid mode"),
 		},
 		"invalid network": {
-			Mode:    string(Offline),
+			Mode:    string(configuration.Offline),
 			Network: "bad network",
 			Port:    "1000",
 			err:     errors.New("bad network is not a valid network"),
 		},
 		"invalid port": {
-			Mode:    string(Offline),
-			Network: Testnet,
+			Mode:    string(configuration.Offline),
+			Network: configuration.Testnet,
 			Port:    "bad port",
 			err:     errors.New("unable to parse port bad port"),
 		},
@@ -133,9 +134,9 @@ func TestLoadConfiguration(t *testing.T) {
 			assert.NoError(t, err)
 			defer utils.RemoveTempDir(newDir)
 
-			os.Setenv(ModeEnv, test.Mode)
-			os.Setenv(NetworkEnv, test.Network)
-			os.Setenv(PortEnv, test.Port)
+			os.Setenv(configuration.ModeEnv, test.Mode)
+			os.Setenv(configuration.NetworkEnv, test.Network)
+			os.Setenv(configuration.PortEnv, test.Port)
 
 			cfg, err := LoadConfiguration(newDir)
 			if test.err != nil {

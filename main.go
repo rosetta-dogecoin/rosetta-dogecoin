@@ -24,6 +24,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 	"github.com/coinbase/rosetta-bitcoin/bitcoin"
 	"github.com/coinbase/rosetta-bitcoin/configuration"
 	"github.com/coinbase/rosetta-bitcoin/indexer"
@@ -87,7 +88,7 @@ func startOnlineDependencies(
 	)
 
 	g.Go(func() error {
-		return bitcoin.StartBitcoind(ctx, cfg.ConfigPath, g)
+		return dogecoin.StartDogecoind(ctx, cfg.ConfigPath, g)
 	})
 
 	i, err := indexer.Initialize(
@@ -128,7 +129,7 @@ func main() {
 
 	logger := loggerRaw.Sugar().Named("main")
 
-	cfg, err := configuration.LoadConfiguration(configuration.DataDirectory)
+	cfg, err := dogecoin.LoadConfiguration(configuration.DataDirectory)
 	if err != nil {
 		logger.Fatalw("unable to load configuration", "error", err)
 	}
