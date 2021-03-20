@@ -1,6 +1,6 @@
 {
   "network": {
-    "blockchain": "Bitcoin",
+    "blockchain": "Dogecoin",
     "network": "Testnet3"
   },
   "data_directory": "cli-data",

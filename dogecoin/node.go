@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package bitcoin
+package dogecoin
 
 import (
 	"bufio"
@@ -29,8 +29,8 @@ import (
 )
 
 const (
-	bitcoindLogger       = "bitcoind"
-	bitcoindStdErrLogger = "bitcoind stderr"
+	bitcoindLogger       = "dogecoind"
+	bitcoindStdErrLogger = "dogecoind stderr"
 )
 
 func logPipe(ctx context.Context, pipe io.ReadCloser, identifier string) error {
@@ -61,9 +61,9 @@ func logPipe(ctx context.Context, pipe io.ReadCloser, identifier string) error {
 	}
 }
 
-// StartBitcoind starts a bitcoind daemon in another goroutine
+// StartDogecoind starts a dogecoin daemon in another goroutine
 // and logs the results to the console.
-func StartBitcoind(ctx context.Context, configPath string, g *errgroup.Group) error {
+func StartDogecoind(ctx context.Context, configPath string, g *errgroup.Group) error {
 	logger := utils.ExtractLogger(ctx, "dogecoind")
 	cmd := exec.Command(
 		"/app/dogecoind",
@@ -89,13 +89,13 @@ func StartBitcoind(ctx context.Context, configPath string, g *errgroup.Group) er
 	})
 
 	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("%w: unable to start bitcoind", err)
+		return fmt.Errorf("%w: unable to start dogecoind", err)
 	}
 
 	g.Go(func() error {
 		<-ctx.Done()
 
-		logger.Warnw("sending interrupt to bitcoind")
+		logger.Warnw("sending interrupt to dogecoind")
 		return cmd.Process.Signal(os.Interrupt)
 	})
 
