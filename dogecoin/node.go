@@ -61,7 +61,7 @@ func logPipe(ctx context.Context, pipe io.ReadCloser, identifier string) error {
 	}
 }
 
-// StartBitcoind starts a bitcoind daemon in another goroutine
+// StartDogecoind starts a dogecoin daemon in another goroutine
 // and logs the results to the console.
 func StartDogecoind(ctx context.Context, configPath string, g *errgroup.Group) error {
 	logger := utils.ExtractLogger(ctx, "dogecoind")
@@ -89,13 +89,13 @@ func StartDogecoind(ctx context.Context, configPath string, g *errgroup.Group) e
 	})
 
 	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("%w: unable to start bitcoind", err)
+		return fmt.Errorf("%w: unable to start dogecoind", err)
 	}
 
 	g.Go(func() error {
 		<-ctx.Done()
 
-		logger.Warnw("sending interrupt to bitcoind")
+		logger.Warnw("sending interrupt to dogecoind")
 		return cmd.Process.Signal(os.Interrupt)
 	})
 
