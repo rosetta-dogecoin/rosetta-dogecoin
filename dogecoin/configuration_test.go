@@ -20,7 +20,6 @@ import (
 	"path"
 	"testing"
 
-	"github.com/coinbase/rosetta-bitcoin/bitcoin"
 	"github.com/coinbase/rosetta-bitcoin/configuration"
 
 	"github.com/coinbase/rosetta-sdk-go/storage/encoder"
@@ -57,12 +56,12 @@ func TestLoadConfiguration(t *testing.T) {
 			cfg: &configuration.Configuration{
 				Mode: configuration.Online,
 				Network: &types.NetworkIdentifier{
-					Network:    bitcoin.MainnetNetwork,
-					Blockchain: bitcoin.Blockchain,
+					Network:    MainnetNetwork,
+					Blockchain: Blockchain,
 				},
-				Params:                 bitcoin.MainnetParams,
-				Currency:               bitcoin.MainnetCurrency,
-				GenesisBlockIdentifier: bitcoin.MainnetGenesisBlockIdentifier,
+				Params:                 MainnetParams,
+				Currency:               MainnetCurrency,
+				GenesisBlockIdentifier: MainnetGenesisBlockIdentifier,
 				Port:                   1000,
 				RPCPort:                mainnetRPCPort,
 				ConfigPath:             mainnetConfigPath,
@@ -86,12 +85,12 @@ func TestLoadConfiguration(t *testing.T) {
 			cfg: &configuration.Configuration{
 				Mode: configuration.Online,
 				Network: &types.NetworkIdentifier{
-					Network:    bitcoin.TestnetNetwork,
-					Blockchain: bitcoin.Blockchain,
+					Network:    TestnetNetwork,
+					Blockchain: Blockchain,
 				},
-				Params:                 bitcoin.TestnetParams,
-				Currency:               bitcoin.TestnetCurrency,
-				GenesisBlockIdentifier: bitcoin.TestnetGenesisBlockIdentifier,
+				Params:                 TestnetParams,
+				Currency:               TestnetCurrency,
+				GenesisBlockIdentifier: TestnetGenesisBlockIdentifier,
 				Port:                   1000,
 				RPCPort:                testnetRPCPort,
 				ConfigPath:             testnetConfigPath,

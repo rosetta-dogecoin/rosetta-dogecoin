@@ -22,7 +22,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/coinbase/rosetta-bitcoin/bitcoin"
 	"github.com/coinbase/rosetta-bitcoin/configuration"
 
 	"github.com/coinbase/rosetta-sdk-go/storage/encoder"
@@ -104,12 +103,12 @@ func LoadConfiguration(baseDirectory string) (*configuration.Configuration, erro
 	switch networkValue {
 	case configuration.Mainnet:
 		config.Network = &types.NetworkIdentifier{
-			Blockchain: bitcoin.Blockchain,
-			Network:    bitcoin.MainnetNetwork,
+			Blockchain: Blockchain,
+			Network:    MainnetNetwork,
 		}
-		config.GenesisBlockIdentifier = bitcoin.MainnetGenesisBlockIdentifier
-		config.Params = bitcoin.MainnetParams
-		config.Currency = bitcoin.MainnetCurrency
+		config.GenesisBlockIdentifier = MainnetGenesisBlockIdentifier
+		config.Params = MainnetParams
+		config.Currency = MainnetCurrency
 		config.ConfigPath = mainnetConfigPath
 		config.RPCPort = mainnetRPCPort
 		config.Compressors = []*encoder.CompressorEntry{
@@ -120,12 +119,12 @@ func LoadConfiguration(baseDirectory string) (*configuration.Configuration, erro
 		}
 	case configuration.Testnet:
 		config.Network = &types.NetworkIdentifier{
-			Blockchain: bitcoin.Blockchain,
-			Network:    bitcoin.TestnetNetwork,
+			Blockchain: Blockchain,
+			Network:    TestnetNetwork,
 		}
-		config.GenesisBlockIdentifier = bitcoin.TestnetGenesisBlockIdentifier
-		config.Params = bitcoin.TestnetParams
-		config.Currency = bitcoin.TestnetCurrency
+		config.GenesisBlockIdentifier = TestnetGenesisBlockIdentifier
+		config.Params = TestnetParams
+		config.Currency = TestnetCurrency
 		config.ConfigPath = testnetConfigPath
 		config.RPCPort = testnetRPCPort
 		config.Compressors = []*encoder.CompressorEntry{
