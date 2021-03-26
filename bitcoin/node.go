@@ -64,9 +64,9 @@ func logPipe(ctx context.Context, pipe io.ReadCloser, identifier string) error {
 // StartBitcoind starts a bitcoind daemon in another goroutine
 // and logs the results to the console.
 func StartBitcoind(ctx context.Context, configPath string, g *errgroup.Group) error {
-	logger := utils.ExtractLogger(ctx, "dogecoind")
+	logger := utils.ExtractLogger(ctx, "bitcoind")
 	cmd := exec.Command(
-		"/app/dogecoind",
+		"/app/bitcoind",
 		fmt.Sprintf("--conf=%s", configPath),
 	) // #nosec G204
 
