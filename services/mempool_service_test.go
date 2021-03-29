@@ -19,7 +19,7 @@ import (
 	"testing"
 
 	"github.com/coinbase/rosetta-bitcoin/configuration"
-	mocks "github.com/coinbase/rosetta-bitcoin/mocks/services"
+	mocks "github.com/rosetta-dogecoin/rosetta-dogecoin/mocks/services"
 
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/stretchr/testify/assert"

@@ -17,7 +17,7 @@ name: CI
 on: [push, pull_request]
 
 env:
-  GO_PACKAGES: ./services/... ./indexer/... ./bitcoin/... ./dogecoin/...
+  GO_PACKAGES: ./services/... ./indexer/... ./dogecoin/...
   GOLANGCI_LINT_VERSION: v1.32.2
   GOLANGCI_LINT_SETTINGS: golint,misspell,gocyclo,gocritic,whitespace,goconst,gocognit,bodyclose,unconvert,lll,unparam
 

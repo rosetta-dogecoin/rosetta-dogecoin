@@ -5,8 +5,7 @@ package services
 import (
 	context "context"
 
-	bitcoin "github.com/coinbase/rosetta-bitcoin/bitcoin"
-
+	dogecoin "github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 	mock "github.com/stretchr/testify/mock"
 
 	types "github.com/coinbase/rosetta-sdk-go/types"
@@ -128,15 +127,15 @@ func (_m *Indexer) GetCoins(_a0 context.Context, _a1 *types.AccountIdentifier) (
 }
 
 // GetScriptPubKeys provides a mock function with given fields: _a0, _a1
-func (_m *Indexer) GetScriptPubKeys(_a0 context.Context, _a1 []*types.Coin) ([]*bitcoin.ScriptPubKey, error) {
+func (_m *Indexer) GetScriptPubKeys(_a0 context.Context, _a1 []*types.Coin) ([]*dogecoin.ScriptPubKey, error) {
 	ret := _m.Called(_a0, _a1)
 
-	var r0 []*bitcoin.ScriptPubKey
-	if rf, ok := ret.Get(0).(func(context.Context, []*types.Coin) []*bitcoin.ScriptPubKey); ok {
+	var r0 []*dogecoin.ScriptPubKey
+	if rf, ok := ret.Get(0).(func(context.Context, []*types.Coin) []*dogecoin.ScriptPubKey); ok {
 		r0 = rf(_a0, _a1)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*bitcoin.ScriptPubKey)
+			r0 = ret.Get(0).([]*dogecoin.ScriptPubKey)
 		}
 	}
 

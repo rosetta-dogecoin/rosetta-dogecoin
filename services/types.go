@@ -17,7 +17,7 @@ package services
 import (
 	"context"
 
-	"github.com/coinbase/rosetta-bitcoin/bitcoin"
+	bitcoin "github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 
 	"github.com/coinbase/rosetta-sdk-go/types"
 )
@@ -25,7 +25,7 @@ import (
 const (
 	// NodeVersion is the version of
 	// bitcoin core we are using.
-	NodeVersion = "0.20.1"
+	NodeVersion = "1.14.3"
 
 	// HistoricalBalanceLookup indicates
 	// that historical balance lookup is supported.

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package dogecoin
+package configuration
 
 import (
 	"errors"
@@ -21,6 +21,8 @@ import (
 	"testing"
 
 	"github.com/coinbase/rosetta-bitcoin/configuration"
+	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
+
 	"github.com/coinbase/rosetta-sdk-go/storage/encoder"
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/coinbase/rosetta-sdk-go/utils"
@@ -55,12 +57,12 @@ func TestLoadConfiguration(t *testing.T) {
 			cfg: &configuration.Configuration{
 				Mode: configuration.Online,
 				Network: &types.NetworkIdentifier{
-					Network:    MainnetNetwork,
-					Blockchain: Blockchain,
+					Network:    dogecoin.MainnetNetwork,
+					Blockchain: dogecoin.Blockchain,
 				},
-				Params:                 MainnetParams,
-				Currency:               MainnetCurrency,
-				GenesisBlockIdentifier: MainnetGenesisBlockIdentifier,
+				Params:                 dogecoin.MainnetParams,
+				Currency:               dogecoin.MainnetCurrency,
+				GenesisBlockIdentifier: dogecoin.MainnetGenesisBlockIdentifier,
 				Port:                   1000,
 				RPCPort:                mainnetRPCPort,
 				ConfigPath:             mainnetConfigPath,
@@ -84,12 +86,12 @@ func TestLoadConfiguration(t *testing.T) {
 			cfg: &configuration.Configuration{
 				Mode: configuration.Online,
 				Network: &types.NetworkIdentifier{
-					Network:    TestnetNetwork,
-					Blockchain: Blockchain,
+					Network:    dogecoin.TestnetNetwork,
+					Blockchain: dogecoin.Blockchain,
 				},
-				Params:                 TestnetParams,
-				Currency:               TestnetCurrency,
-				GenesisBlockIdentifier: TestnetGenesisBlockIdentifier,
+				Params:                 dogecoin.TestnetParams,
+				Currency:               dogecoin.TestnetCurrency,
+				GenesisBlockIdentifier: dogecoin.TestnetGenesisBlockIdentifier,
 				Port:                   1000,
 				RPCPort:                testnetRPCPort,
 				ConfigPath:             testnetConfigPath,

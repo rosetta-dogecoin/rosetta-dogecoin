@@ -19,8 +19,8 @@ import (
 	"testing"
 
 	"github.com/coinbase/rosetta-bitcoin/configuration"
-	mocks "github.com/coinbase/rosetta-bitcoin/mocks/services"
-	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
+	bitcoin "github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
+	mocks "github.com/rosetta-dogecoin/rosetta-dogecoin/mocks/services"
 
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/stretchr/testify/assert"
@@ -48,7 +48,7 @@ func TestAccountBalance_Offline(t *testing.T) {
 func TestAccountBalance_Online_Current(t *testing.T) {
 	cfg := &configuration.Configuration{
 		Mode:     configuration.Online,
-		Currency: dogecoin.MainnetCurrency,
+		Currency: bitcoin.MainnetCurrency,
 	}
 	mockIndexer := &mocks.Indexer{}
 	servicer := NewAccountAPIService(cfg, mockIndexer)
@@ -62,14 +62,14 @@ func TestAccountBalance_Online_Current(t *testing.T) {
 	}
 	amount := &types.Amount{
 		Value:    "25",
-		Currency: dogecoin.MainnetCurrency,
+		Currency: bitcoin.MainnetCurrency,
 	}
 
 	mockIndexer.On(
 		"GetBalance",
 		ctx,
 		account,
-		dogecoin.MainnetCurrency,
+		bitcoin.MainnetCurrency,
 		(*types.PartialBlockIdentifier)(nil),
 	).Return(amount, block, nil).Once()
 	bal, err := servicer.AccountBalance(ctx, &types.AccountBalanceRequest{
@@ -89,7 +89,7 @@ func TestAccountBalance_Online_Current(t *testing.T) {
 func TestAccountBalance_Online_Historical(t *testing.T) {
 	cfg := &configuration.Configuration{
 		Mode:     configuration.Online,
-		Currency: dogecoin.MainnetCurrency,
+		Currency: bitcoin.MainnetCurrency,
 	}
 	mockIndexer := &mocks.Indexer{}
 	servicer := NewAccountAPIService(cfg, mockIndexer)
@@ -106,14 +106,14 @@ func TestAccountBalance_Online_Historical(t *testing.T) {
 	}
 	amount := &types.Amount{
 		Value:    "25",
-		Currency: dogecoin.MainnetCurrency,
+		Currency: bitcoin.MainnetCurrency,
 	}
 
 	mockIndexer.On(
 		"GetBalance",
 		ctx,
 		account,
-		dogecoin.MainnetCurrency,
+		bitcoin.MainnetCurrency,
 		partialBlock,
 	).Return(amount, block, nil).Once()
 	bal, err := servicer.AccountBalance(ctx, &types.AccountBalanceRequest{
@@ -134,7 +134,7 @@ func TestAccountBalance_Online_Historical(t *testing.T) {
 func TestAccountCoins_Online(t *testing.T) {
 	cfg := &configuration.Configuration{
 		Mode:     configuration.Online,
-		Currency: dogecoin.MainnetCurrency,
+		Currency: bitcoin.MainnetCurrency,
 	}
 	mockIndexer := &mocks.Indexer{}
 	servicer := NewAccountAPIService(cfg, mockIndexer)

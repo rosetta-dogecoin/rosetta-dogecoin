@@ -24,12 +24,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/coinbase/rosetta-bitcoin/bitcoin"
 	"github.com/coinbase/rosetta-bitcoin/configuration"
-	"github.com/coinbase/rosetta-bitcoin/indexer"
-	"github.com/coinbase/rosetta-bitcoin/services"
-	"github.com/coinbase/rosetta-bitcoin/utils"
-	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
+	bitcoin "github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
+	"github.com/rosetta-dogecoin/rosetta-dogecoin/indexer"
+	"github.com/rosetta-dogecoin/rosetta-dogecoin/services"
+	"github.com/rosetta-dogecoin/rosetta-dogecoin/utils"
 
 	"github.com/coinbase/rosetta-sdk-go/asserter"
 	"github.com/coinbase/rosetta-sdk-go/server"
@@ -81,6 +80,9 @@ func startOnlineDependencies(
 	cfg *configuration.Configuration,
 	g *errgroup.Group,
 ) (*bitcoin.Client, *indexer.Indexer, error) {
+	fmt.Println("bitcoin.LocalhostURL", bitcoin.LocalhostURL(cfg.RPCPort))
+	fmt.Println("cfg.GenesisBlockIdentifier", cfg.GenesisBlockIdentifier)
+	fmt.Println("cfg.Currency", cfg.Currency)
 	client := bitcoin.NewClient(
 		bitcoin.LocalhostURL(cfg.RPCPort),
 		cfg.GenesisBlockIdentifier,
@@ -88,7 +90,7 @@ func startOnlineDependencies(
 	)
 
 	g.Go(func() error {
-		return dogecoin.StartDogecoind(ctx, cfg.ConfigPath, g)
+		return bitcoin.StartDogecoind(ctx, cfg.ConfigPath, g)
 	})
 
 	i, err := indexer.Initialize(
@@ -129,7 +131,7 @@ func main() {
 
 	logger := loggerRaw.Sugar().Named("main")
 
-	cfg, err := dogecoin.LoadConfiguration(configuration.DataDirectory)
+	cfg, err := bitcoin.LoadConfiguration(configuration.DataDirectory)
 	if err != nil {
 		logger.Fatalw("unable to load configuration", "error", err)
 	}
@@ -189,6 +191,21 @@ func main() {
 		return server.Shutdown(ctx)
 	})
 
+	ticker := time.NewTicker(5 * time.Second) //nolint:gomnd
+	quit := make(chan struct{})
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				_, clienterr := client.NetworkStatus(ctx)
+				logger.Infow("client status", "err", clienterr)
+			case <-quit:
+				ticker.Stop()
+				return
+			}
+		}
+	}()
+
 	err = g.Wait()
 
 	// We always want to attempt to close the database, regardless of the error.
@@ -198,10 +215,10 @@ func main() {
 	}
 
 	if signalReceived {
-		logger.Fatalw("rosetta-bitcoin halted")
+		logger.Fatalw("rosetta-dogecoin halted")
 	}
 
 	if err != nil {
-		logger.Fatalw("rosetta-bitcoin sync failed", "error", err)
+		logger.Fatalw("rosetta-dogecoin sync failed", "error", err)
 	}
 }

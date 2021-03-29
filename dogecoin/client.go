@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package bitcoin
+package dogecoin
 
 import (
 	"bytes"
@@ -50,7 +50,13 @@ const (
 	// * 0 returns the hex representation
 	// * 1 returns the JSON representation
 	// * 2 returns the JSON representation with included Transaction data
-	blockVerbosity = 2
+	blockVerbosity = true
+
+	// txVerbosity represents the verbose level used when fetching transactions
+	// * 0 returns the hex representation
+	// * 1 returns the JSON representation
+	// * 2 returns the JSON representation with included Transaction data
+	txVerbosity = true
 )
 
 type requestMethod string
@@ -70,6 +76,9 @@ const (
 
 	// https://developer.bitcoin.org/reference/rpc/pruneblockchain.html
 	requestMethodPruneBlockchain requestMethod = "pruneblockchain"
+
+	// https://developer.bitcoin.org/reference/rpc/sendrawtransaction.html
+	requestMethodGetRawTransaction requestMethod = "getrawtransaction"
 
 	// https://developer.bitcoin.org/reference/rpc/sendrawtransaction.html
 	requestMethodSendRawTransaction requestMethod = "sendrawtransaction"
@@ -215,6 +224,7 @@ func (b *Client) GetRawBlock(
 	identifier *types.PartialBlockIdentifier,
 ) (*Block, []string, error) {
 	block, err := b.getBlock(ctx, identifier)
+
 	if err != nil {
 		return nil, nil, err
 	}
@@ -253,6 +263,7 @@ func (b *Client) ParseBlock(
 	}
 
 	txs, err := b.parseTransactions(ctx, block, coins)
+
 	if err != nil {
 		return nil, err
 	}
@@ -260,6 +271,25 @@ func (b *Client) ParseBlock(
 	rblock.Transactions = txs
 
 	return rblock, nil
+}
+
+// GetRawTransaction gets a serialized transaction
+// to bitcoind.
+func (b *Client) GetRawTransaction(
+	ctx context.Context,
+	txid string,
+) (*Transaction, error) {
+	// Parameters:
+	//   1. txid string
+	//   2. verbose true
+	params := []interface{}{txid, txVerbosity}
+
+	response := &RawTransactionResponse{}
+	if err := b.post(ctx, requestMethodGetRawTransaction, params, response); err != nil {
+		return nil, fmt.Errorf("%w: error fetching tx by hash %s", err, txid)
+	}
+
+	return response.Result, nil
 }
 
 // SendRawTransaction submits a serialized transaction
@@ -365,11 +395,39 @@ func (b *Client) getBlock(
 	params := []interface{}{hash, blockVerbosity}
 
 	response := &blockResponse{}
+
 	if err := b.post(ctx, requestMethodGetBlock, params, response); err != nil {
 		return nil, fmt.Errorf("%w: error fetching block by hash %s", err, hash)
 	}
 
-	return response.Result, nil
+	block := response.Result
+
+	var txs []*Transaction
+
+	for _, txid := range block.TxIds {
+		transaction, err := b.GetRawTransaction(ctx, txid)
+		if err != nil {
+			return nil, fmt.Errorf("%w: error fetching transaction by txid %s", err, txid)
+		}
+		txs = append(txs, transaction)
+	}
+
+	return &Block{
+		Hash:              block.Hash,
+		Height:            block.Height,
+		PreviousBlockHash: block.PreviousBlockHash,
+		Time:              block.Time,
+		MedianTime:        block.MedianTime,
+		Nonce:             block.Nonce,
+		MerkleRoot:        block.MerkleRoot,
+		Version:           block.Version,
+		Size:              block.Size,
+		Weight:            block.Weight,
+		Bits:              block.Bits,
+		Difficulty:        block.Difficulty,
+		Txs:               txs,
+		TxIds:             block.TxIds,
+	}, nil
 }
 
 // getBlockchainInfo performs the `getblockchaininfo` JSON-RPC request
@@ -378,8 +436,9 @@ func (b *Client) getBlockchainInfo(
 ) (*BlockchainInfo, error) {
 	params := []interface{}{}
 	response := &blockchainInfoResponse{}
+
 	if err := b.post(ctx, requestMethodGetBlockchainInfo, params, response); err != nil {
-		return nil, fmt.Errorf("%w: unbale to get blockchain info", err)
+		return nil, fmt.Errorf("%w: unable to get blockchain info", err)
 	}
 
 	return response.Result, nil
@@ -415,7 +474,6 @@ func (b *Client) parseBlockData(block *Block) (*types.Block, error) {
 	if block == nil {
 		return nil, errors.New("error parsing nil block")
 	}
-
 	blockIndex := block.Height
 	previousBlockIndex := blockIndex - 1
 	previousBlockHash := block.PreviousBlockHash
@@ -475,13 +533,13 @@ func (b *Client) getHashFromIndex(
 //
 // Source: https://github.com/bitcoin/bitcoin/commit/ab91bf39b7c11e9c86bb2043c24f0f377f1cf514
 func skipTransactionOperations(blockNumber int64, blockHash string, transactionHash string) bool {
-	if blockNumber == 91842 && blockHash == "00000000000a4d0a398161ffc163c503763b1f4360639393e0e4c8e300e0caec" &&
-		transactionHash == "d5d27987d2a3dfc724e359870c6644b40e497bdc0589a033220fe15429d88599" {
+	if blockNumber == 91842 && blockHash == "1c1a492e540ae58d9c0b550cffaaec44b536d40c2092af8eb0ab9578476819d7" &&
+		transactionHash == "f085dfda2a561099b19a89d3bf87c267449d02de738ffee1dd5570d4f460856f" {
 		return true
 	}
 
-	if blockNumber == 91880 && blockHash == "00000000000743f190a18c5577a3c2d2a1f610ae9601ac046a38084ccb7cd721" &&
-		transactionHash == "e3bf3d07d4b0375638d5f1db5255fe07ba2c4cb067cd81b84ee974b6585fb468" {
+	if blockNumber == 91880 && blockHash == "f4e3c2c6cff75517e42c12d282d4ea5293669d39d5d577244eb8eae5a6c22f74" &&
+		transactionHash == "cbe22cfd338650cade2e1a2964dd899f36f708687a0bb8ab1149f387d28ab1f6" {
 		return true
 	}
 
@@ -810,7 +868,7 @@ func (b *Client) post(
 	params []interface{},
 	response jSONRPCResponse,
 ) error {
-	rpcRequest := &request{
+	rpcRequest := &Request{
 		JSONRPC: jSONRPCVersion,
 		ID:      requestID,
 		Method:  string(method),

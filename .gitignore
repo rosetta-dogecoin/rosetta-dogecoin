@@ -14,6 +14,8 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
+*.patch
+
 rosetta-dogecoin
 dogecoin-data
 cli-data

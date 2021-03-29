@@ -1,7 +1,7 @@
 {
   "result": {
-    "feerate": 0.00001,
-    "blocks": 2
+    "feerate": -1,
+    "blocks": 25
   },
   "error": null,
   "id": "curltest"
