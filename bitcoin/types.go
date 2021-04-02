@@ -194,6 +194,24 @@ type Block struct {
 	Txs []*Transaction `json:"tx"`
 }
 
+// Block is a raw Bitcoin block (with verbosity == 1).
+type BlockV1 struct {
+	Hash              string  `json:"hash"`
+	Height            int64   `json:"height"`
+	PreviousBlockHash string  `json:"previousblockhash"`
+	Time              int64   `json:"time"`
+	MedianTime        int64   `json:"mediantime"`
+	Nonce             int64   `json:"nonce"`
+	MerkleRoot        string  `json:"merkleroot"`
+	Version           int32   `json:"version"`
+	Size              int64   `json:"size"`
+	Weight            int64   `json:"weight"`
+	Bits              string  `json:"bits"`
+	Difficulty        float64 `json:"difficulty"`
+
+	Txs []string `json:"tx"`
+}
+
 // Metadata returns the metadata for a block.
 func (b Block) Metadata() (map[string]interface{}, error) {
 	m := &BlockMetadata{
@@ -340,13 +358,36 @@ type responseError struct {
 	Message string `json:"message"`
 }
 
-// BlockResponse is the response body for `getblock` requests
-type blockResponse struct {
-	Result *Block         `json:"result"`
+// blockResponseV0 is the response body for `getblock` requests (with verbosity == 0)
+type blockResponseV0 struct {
+	Result string         `json:"result"`
 	Error  *responseError `json:"error"`
 }
 
-func (b blockResponse) Err() error {
+func (b blockResponseV0) Err() error {
+	if b.Error == nil {
+		return nil
+	}
+
+	if b.Error.Code == blockNotFoundErrCode {
+		return ErrBlockNotFound
+	}
+
+	return fmt.Errorf(
+		"%w: error JSON RPC response, code: %d, message: %s",
+		ErrJSONRPCError,
+		b.Error.Code,
+		b.Error.Message,
+	)
+}
+
+// blockResponseV1 is the response body for `getblock` requests (verbosity == 1)
+type blockResponseV1 struct {
+	Result *BlockV1       `json:"result"`
+	Error  *responseError `json:"error"`
+}
+
+func (b blockResponseV1) Err() error {
 	if b.Error == nil {
 		return nil
 	}
@@ -424,6 +465,25 @@ type blockHashResponse struct {
 }
 
 func (b blockHashResponse) Err() error {
+	if b.Error == nil {
+		return nil
+	}
+
+	return fmt.Errorf(
+		"%w: error JSON RPC response, code: %d, message: %s",
+		ErrJSONRPCError,
+		b.Error.Code,
+		b.Error.Message,
+	)
+}
+
+// decodeTransactionResponse is the response body for `decoderawtransaction` requests
+type decodeTransactionResponse struct {
+	Result *Transaction   `json:"result"`
+	Error  *responseError `json:"error"`
+}
+
+func (b decodeTransactionResponse) Err() error {
 	if b.Error == nil {
 		return nil
 	}
