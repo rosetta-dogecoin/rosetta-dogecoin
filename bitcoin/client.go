@@ -361,20 +361,20 @@ func (b *Client) getBlock(
 	//   1. Block hash (string, required)
 	//   2. Verbosity (bool, optional, default=false)
 	params := []interface{}{hash, true}
-	response_v1 := &blockResponseV1{}
-	if err := b.post(ctx, requestMethodGetBlock, params, response_v1); err != nil {
+	responseV1 := &blockResponseV1{}
+	if err := b.post(ctx, requestMethodGetBlock, params, responseV1); err != nil {
 		return nil, fmt.Errorf("%w: error fetching block by hash %s", err, hash)
 	}
 	// Parameters:
 	//   1. Block hash (string, required)
 	//   2. Verbosity (bool, optional, default=false)
 	params = []interface{}{hash, false}
-	response_v0 := &blockResponseV0{}
-	if err := b.post(ctx, requestMethodGetBlock, params, response_v0); err != nil {
+	responseV0 := &blockResponseV0{}
+	if err := b.post(ctx, requestMethodGetBlock, params, responseV0); err != nil {
 		return nil, fmt.Errorf("%w: error fetching block by hash %s", err, hash)
 	}
 	// Decode the serialized block hex to raw bytes
-	block, err := hex.DecodeString(response_v0.Result)
+	block, err := hex.DecodeString(responseV0.Result)
 	if err != nil {
 		return nil, err
 	}
@@ -395,27 +395,27 @@ func (b *Client) getBlock(
 		//   1. hexstring (string, required)
 		hexstring := hex.EncodeToString(buf.Bytes())
 		params = []interface{}{hexstring}
-		tx_v := &decodeTransactionResponse{}
-		if err := b.post(ctx, requestMethodDecodeRawTransaction, params, tx_v); err != nil {
+		txV := &decodeTransactionResponse{}
+		if err := b.post(ctx, requestMethodDecodeRawTransaction, params, txV); err != nil {
 			return nil, fmt.Errorf("%w: error decoding block with hexstring %s", err, hexstring)
 		}
 
-		txs = append(txs, tx_v.Result)
+		txs = append(txs, txV.Result)
 	}
 
 	return &Block{
-		Hash:              response_v1.Result.Hash,
-		Height:            response_v1.Result.Height,
-		PreviousBlockHash: response_v1.Result.PreviousBlockHash,
-		Time:              response_v1.Result.Time,
-		MedianTime:        response_v1.Result.MedianTime,
-		Nonce:             response_v1.Result.Nonce,
-		MerkleRoot:        response_v1.Result.MerkleRoot,
-		Version:           response_v1.Result.Version,
-		Size:              response_v1.Result.Size,
-		Weight:            response_v1.Result.Weight,
-		Bits:              response_v1.Result.Bits,
-		Difficulty:        response_v1.Result.Difficulty,
+		Hash:              responseV1.Result.Hash,
+		Height:            responseV1.Result.Height,
+		PreviousBlockHash: responseV1.Result.PreviousBlockHash,
+		Time:              responseV1.Result.Time,
+		MedianTime:        responseV1.Result.MedianTime,
+		Nonce:             responseV1.Result.Nonce,
+		MerkleRoot:        responseV1.Result.MerkleRoot,
+		Version:           responseV1.Result.Version,
+		Size:              responseV1.Result.Size,
+		Weight:            responseV1.Result.Weight,
+		Bits:              responseV1.Result.Bits,
+		Difficulty:        responseV1.Result.Difficulty,
 		Txs:               txs,
 	}, nil
 }
