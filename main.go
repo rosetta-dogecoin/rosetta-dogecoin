@@ -25,7 +25,7 @@ import (
 	"time"
 
 	"github.com/coinbase/rosetta-bitcoin/configuration"
-	bitcoin "github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
+	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/indexer"
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/services"
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/utils"
@@ -67,6 +67,7 @@ func handleSignals(ctx context.Context, listeners []context.CancelFunc) {
 	go func() {
 		sig := <-sigs
 		logger.Warnw("received signal", "signal", sig)
+		fmt.Println("sig: ", sig)
 		signalReceived = true
 		for _, listener := range listeners {
 			listener()
@@ -79,18 +80,18 @@ func startOnlineDependencies(
 	cancel context.CancelFunc,
 	cfg *configuration.Configuration,
 	g *errgroup.Group,
-) (*bitcoin.Client, *indexer.Indexer, error) {
-	fmt.Println("bitcoin.LocalhostURL", bitcoin.LocalhostURL(cfg.RPCPort))
+) (*dogecoin.Client, *indexer.Indexer, error) {
+	fmt.Println("bitcoin.LocalhostURL", dogecoin.LocalhostURL(cfg.RPCPort))
 	fmt.Println("cfg.GenesisBlockIdentifier", cfg.GenesisBlockIdentifier)
 	fmt.Println("cfg.Currency", cfg.Currency)
-	client := bitcoin.NewClient(
-		bitcoin.LocalhostURL(cfg.RPCPort),
+	client := dogecoin.NewClient(
+		dogecoin.LocalhostURL(cfg.RPCPort),
 		cfg.GenesisBlockIdentifier,
 		cfg.Currency,
 	)
 
 	g.Go(func() error {
-		return bitcoin.StartDogecoind(ctx, cfg.ConfigPath, g)
+		return dogecoin.StartDogecoind(ctx, cfg.ConfigPath, g)
 	})
 
 	i, err := indexer.Initialize(
@@ -131,7 +132,7 @@ func main() {
 
 	logger := loggerRaw.Sugar().Named("main")
 
-	cfg, err := bitcoin.LoadConfiguration(configuration.DataDirectory)
+	cfg, err := dogecoin.LoadConfiguration(configuration.DataDirectory)
 	if err != nil {
 		logger.Fatalw("unable to load configuration", "error", err)
 	}
@@ -145,7 +146,7 @@ func main() {
 	})
 
 	var i *indexer.Indexer
-	var client *bitcoin.Client
+	var client *dogecoin.Client
 	if cfg.Mode == configuration.Online {
 		client, i, err = startOnlineDependencies(ctx, cancel, cfg, g)
 		if err != nil {
@@ -156,7 +157,7 @@ func main() {
 	// The asserter automatically rejects incorrectly formatted
 	// requests.
 	asserter, err := asserter.NewServer(
-		bitcoin.OperationTypes,
+		dogecoin.OperationTypes,
 		services.HistoricalBalanceLookup,
 		[]*types.NetworkIdentifier{cfg.Network},
 		nil,

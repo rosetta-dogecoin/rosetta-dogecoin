@@ -190,7 +190,6 @@ type Block struct {
 	Bits              string         `json:"bits"`
 	Difficulty        float64        `json:"difficulty"`
 	Txs               []*Transaction `json:"-"`
-	TxIds             []string       `json:"tx"`
 }
 
 // Metadata returns the metadata for a block.
@@ -212,6 +211,53 @@ func (b Block) Metadata() (map[string]interface{}, error) {
 // BlockMetadata is a collection of useful
 // metadata in a block.
 type BlockMetadata struct {
+	Nonce      int64   `json:"nonce,omitempty"`
+	MerkleRoot string  `json:"merkleroot,omitempty"`
+	Version    int32   `json:"version,omitempty"`
+	Size       int64   `json:"size,omitempty"`
+	Weight     int64   `json:"weight,omitempty"`
+	MedianTime int64   `json:"mediantime,omitempty"`
+	Bits       string  `json:"bits,omitempty"`
+	Difficulty float64 `json:"difficulty,omitempty"`
+}
+
+// Block is a raw Bitcoin block (with verbosity == 1).
+type RawBlock struct {
+	Hash              string  `json:"hash"`
+	Height            int64   `json:"height"`
+	PreviousBlockHash string  `json:"previousblockhash"`
+	Time              int64   `json:"time"`
+	MedianTime        int64   `json:"mediantime"`
+	Nonce             int64   `json:"nonce"`
+	MerkleRoot        string  `json:"merkleroot"`
+	Version           int32   `json:"version"`
+	Size              int64   `json:"size"`
+	Weight            int64   `json:"weight"`
+	Bits              string  `json:"bits"`
+	Difficulty        float64 `json:"difficulty"`
+
+	Txs []string `json:"tx"`
+}
+
+// Metadata returns the metadata for a block.
+func (b RawBlock) Metadata() (map[string]interface{}, error) {
+	m := &BlockMetadata{
+		Nonce:      b.Nonce,
+		MerkleRoot: b.MerkleRoot,
+		Version:    b.Version,
+		Size:       b.Size,
+		Weight:     b.Weight,
+		MedianTime: b.MedianTime,
+		Bits:       b.Bits,
+		Difficulty: b.Difficulty,
+	}
+
+	return types.MarshalMap(m)
+}
+
+// BlockMetadata is a collection of useful
+// metadata in a block.
+type RawBlockMetadata struct {
 	Nonce      int64   `json:"nonce,omitempty"`
 	MerkleRoot string  `json:"merkleroot,omitempty"`
 	Version    int32   `json:"version,omitempty"`
@@ -337,6 +383,28 @@ type jSONRPCResponse interface {
 type responseError struct {
 	Code    int64  `json:"code"`
 	Message string `json:"message"`
+}
+
+type RawBlockResponse struct {
+	Result string         `json:"result"`
+	Error  *responseError `json:"error"`
+}
+
+func (b RawBlockResponse) Err() error {
+	if b.Error == nil {
+		return nil
+	}
+
+	if b.Error.Code == blockNotFoundErrCode {
+		return ErrBlockNotFound
+	}
+
+	return fmt.Errorf(
+		"%w: error JSON RPC response, code: %d, message: %s",
+		ErrJSONRPCError,
+		b.Error.Code,
+		b.Error.Message,
+	)
 }
 
 // BlockResponse is the response body for `getblock` requests
@@ -519,7 +587,6 @@ func (r rawMempoolResponse) Err() error {
 // the canonical CoinIdentifier.Identifier used in
 // rosetta-bitcoin.
 func CoinIdentifier(hash string, vout int64) string {
-	fmt.Printf("coinidentifier hash vout: %s:%d", hash, vout)
 	return fmt.Sprintf("%s:%d", hash, vout)
 }
 

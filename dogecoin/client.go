@@ -17,6 +17,7 @@ package dogecoin
 import (
 	"bytes"
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -26,8 +27,9 @@ import (
 	"strconv"
 	"time"
 
-	bitcoinUtils "github.com/coinbase/rosetta-bitcoin/utils"
+	bitcoinUtils "github.com/rosetta-dogecoin/rosetta-dogecoin/utils"
 
+	"github.com/btcsuite/btcd/wire"
 	"github.com/btcsuite/btcutil"
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/coinbase/rosetta-sdk-go/utils"
@@ -390,7 +392,7 @@ func (b *Client) getBlock(
 
 	// Parameters:
 	//   1. Block hash (string, required)
-	//   2. Verbosity (integer, optional, default=1)
+	//   2. Verbosity (boolean, optional, default=true)
 	// https://bitcoin.org/en/developer-reference#getblock
 	params := []interface{}{hash, blockVerbosity}
 
@@ -400,33 +402,53 @@ func (b *Client) getBlock(
 		return nil, fmt.Errorf("%w: error fetching block by hash %s", err, hash)
 	}
 
-	block := response.Result
+	params = []interface{}{hash, false}
+
+	rawResponse := &RawBlockResponse{}
+
+	if err := b.post(ctx, requestMethodGetBlock, params, rawResponse); err != nil {
+		return nil, fmt.Errorf("%w: error fetching block by hash %s", err, hash)
+	}
+
+	block, err := hex.DecodeString(rawResponse.Result)
+	if err != nil {
+		return nil, err
+	}
+	var msgBlock wire.MsgBlock
+	if err := msgBlock.Deserialize(bytes.NewReader(block)); err != nil {
+		return nil, err
+	}
 
 	var txs []*Transaction
 
-	for _, txid := range block.TxIds {
-		transaction, err := b.GetRawTransaction(ctx, txid)
-		if err != nil {
-			return nil, fmt.Errorf("%w: error fetching transaction by txid %s", err, txid)
+	for _, tx := range msgBlock.Transactions {
+		buf := bytes.NewBuffer(make([]byte, 0, tx.SerializeSize()))
+		if err := tx.Serialize(buf); err != nil {
+			return nil, err
 		}
-		txs = append(txs, transaction)
+		hexstring := hex.EncodeToString(buf.Bytes())
+		params = []interface{}{hexstring}
+		txV := &RawTransactionResponse{}
+		if err := b.post(ctx, "decoderawtransaction", params, txV); err != nil {
+			return nil, fmt.Errorf("%w: error decoding block with hexstring %s", err, hexstring)
+		}
+		txs = append(txs, txV.Result)
 	}
 
 	return &Block{
-		Hash:              block.Hash,
-		Height:            block.Height,
-		PreviousBlockHash: block.PreviousBlockHash,
-		Time:              block.Time,
-		MedianTime:        block.MedianTime,
-		Nonce:             block.Nonce,
-		MerkleRoot:        block.MerkleRoot,
-		Version:           block.Version,
-		Size:              block.Size,
-		Weight:            block.Weight,
-		Bits:              block.Bits,
-		Difficulty:        block.Difficulty,
+		Hash:              response.Result.Hash,
+		Height:            response.Result.Height,
+		PreviousBlockHash: response.Result.PreviousBlockHash,
+		Time:              response.Result.Time,
+		MedianTime:        response.Result.MedianTime,
+		Nonce:             response.Result.Nonce,
+		MerkleRoot:        response.Result.MerkleRoot,
+		Version:           response.Result.Version,
+		Size:              response.Result.Size,
+		Weight:            response.Result.Weight,
+		Bits:              response.Result.Bits,
+		Difficulty:        response.Result.Difficulty,
 		Txs:               txs,
-		TxIds:             block.TxIds,
 	}, nil
 }
 
