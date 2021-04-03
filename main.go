@@ -67,7 +67,6 @@ func handleSignals(ctx context.Context, listeners []context.CancelFunc) {
 	go func() {
 		sig := <-sigs
 		logger.Warnw("received signal", "signal", sig)
-		fmt.Println("sig: ", sig)
 		signalReceived = true
 		for _, listener := range listeners {
 			listener()
@@ -81,9 +80,6 @@ func startOnlineDependencies(
 	cfg *configuration.Configuration,
 	g *errgroup.Group,
 ) (*dogecoin.Client, *indexer.Indexer, error) {
-	fmt.Println("bitcoin.LocalhostURL", dogecoin.LocalhostURL(cfg.RPCPort))
-	fmt.Println("cfg.GenesisBlockIdentifier", cfg.GenesisBlockIdentifier)
-	fmt.Println("cfg.Currency", cfg.Currency)
 	client := dogecoin.NewClient(
 		dogecoin.LocalhostURL(cfg.RPCPort),
 		cfg.GenesisBlockIdentifier,
@@ -191,21 +187,6 @@ func main() {
 
 		return server.Shutdown(ctx)
 	})
-
-	ticker := time.NewTicker(5 * time.Second) //nolint:gomnd
-	quit := make(chan struct{})
-	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				_, clienterr := client.NetworkStatus(ctx)
-				logger.Infow("client status", "err", clienterr)
-			case <-quit:
-				ticker.Stop()
-				return
-			}
-		}
-	}()
 
 	err = g.Wait()
 

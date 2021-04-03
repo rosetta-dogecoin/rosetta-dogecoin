@@ -594,6 +594,5 @@ func CoinIdentifier(hash string, vout int64) string {
 // from a CoinIdentifier.Identifier.
 func TransactionHash(identifier string) string {
 	vals := strings.Split(identifier, ":")
-	fmt.Println("transactionhash coinidentifier: ", vals[0])
 	return vals[0]
 }

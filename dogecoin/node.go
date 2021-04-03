@@ -39,7 +39,6 @@ func logPipe(ctx context.Context, pipe io.ReadCloser, identifier string) error {
 	for {
 		str, err := reader.ReadString('\n')
 		if err != nil {
-			fmt.Println("closing logger str: ", str)
 			logger.Warnw("closing logger", "error", err)
 			return err
 		}
@@ -73,13 +72,11 @@ func StartDogecoind(ctx context.Context, configPath string, g *errgroup.Group) e
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		fmt.Println("startDogecoind stdout: ", stdout)
 		return err
 	}
 
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
-		fmt.Println("startDogecoind stderr: ", stderr)
 		return err
 	}
 
