@@ -47,6 +47,9 @@ const (
 
 	// jSONRPCVersion is the JSON-RPC version we use for making requests
 	jSONRPCVersion = "2.0"
+
+	// weightMultiplier is the weight unit multipler
+	weightMultiplier = 4
 )
 
 type requestMethod string
@@ -399,7 +402,7 @@ func (b *Client) getBlock(
 		if err := b.post(ctx, requestMethodDecodeRawTransaction, params, txV); err != nil {
 			return nil, fmt.Errorf("%w: error decoding block with hexstring %s", err, hexstring)
 		}
-		txV.Result.Weight = txV.Result.Vsize * 4
+		txV.Result.Weight = txV.Result.Vsize * weightMultiplier
 		txs = append(txs, txV.Result)
 	}
 
