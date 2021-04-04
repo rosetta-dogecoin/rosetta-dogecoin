@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package dogecoin
+package configuration
 
 import (
 	"errors"
@@ -22,13 +22,32 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/rosetta-dogecoin/rosetta-dogecoin/configuration"
+	"github.com/rosetta-dogecoin/rosetta-dogecoin/bitcoin"
 
+	"github.com/btcsuite/btcd/chaincfg"
 	"github.com/coinbase/rosetta-sdk-go/storage/encoder"
 	"github.com/coinbase/rosetta-sdk-go/types"
 )
 
+// Mode is the setting that determines if
+// the implementation is "online" or "offline".
+type Mode string
+
 const (
+	// Online is when the implementation is permitted
+	// to make outbound connections.
+	Online Mode = "ONLINE"
+
+	// Offline is when the implementation is not permitted
+	// to make outbound connections.
+	Offline Mode = "OFFLINE"
+
+	// Mainnet is the Bitcoin Mainnet.
+	Mainnet string = "MAINNET"
+
+	// Testnet is Bitcoin Testnet3.
+	Testnet string = "TESTNET"
+
 	// mainnetConfigPath is the path of the Bitcoin
 	// configuration file for mainnet.
 	mainnetConfigPath = "/app/bitcoin-mainnet.conf"
@@ -42,8 +61,8 @@ const (
 	testnetTransactionDictionary = "/app/testnet-transaction.zstd"
 	mainnetTransactionDictionary = "/app/mainnet-transaction.zstd"
 
-	mainnetRPCPort = 22555
-	testnetRPCPort = 44555
+	mainnetRPCPort = 8332
+	testnetRPCPort = 18332
 
 	// min prune depth is 288:
 	// https://github.com/bitcoin/bitcoin/blob/ad2952d17a2af419a04256b10b53c7377f826a27/src/validation.h#L84
@@ -60,28 +79,65 @@ const (
 	// persistent data.
 	DataDirectory = "/data"
 
-	bitcoindPath = "dogecoind"
+	bitcoindPath = "bitcoind"
 	indexerPath  = "indexer"
 
 	// allFilePermissions specifies anyone can do anything
 	// to the file.
 	allFilePermissions = 0777
+
+	// ModeEnv is the environment variable read
+	// to determine mode.
+	ModeEnv = "MODE"
+
+	// NetworkEnv is the environment variable
+	// read to determine network.
+	NetworkEnv = "NETWORK"
+
+	// PortEnv is the environment variable
+	// read to determine the port for the Rosetta
+	// implementation.
+	PortEnv = "PORT"
 )
+
+// PruningConfiguration is the configuration to
+// use for pruning in the indexer.
+type PruningConfiguration struct {
+	Frequency time.Duration
+	Depth     int64
+	MinHeight int64
+}
+
+// Configuration determines how
+type Configuration struct {
+	Mode                   Mode
+	Network                *types.NetworkIdentifier
+	Params                 *chaincfg.Params
+	Currency               *types.Currency
+	GenesisBlockIdentifier *types.BlockIdentifier
+	Port                   int
+	RPCPort                int
+	ConfigPath             string
+	Pruning                *PruningConfiguration
+	IndexerPath            string
+	BitcoindPath           string
+	Compressors            []*encoder.CompressorEntry
+}
 
 // LoadConfiguration attempts to create a new Configuration
 // using the ENVs in the environment.
-func LoadConfiguration(baseDirectory string) (*configuration.Configuration, error) {
-	config := &configuration.Configuration{}
-	config.Pruning = &configuration.PruningConfiguration{
+func LoadConfiguration(baseDirectory string) (*Configuration, error) {
+	config := &Configuration{}
+	config.Pruning = &PruningConfiguration{
 		Frequency: pruneFrequency,
 		Depth:     pruneDepth,
 		MinHeight: minPruneHeight,
 	}
 
-	modeValue := configuration.Mode(os.Getenv(configuration.ModeEnv))
+	modeValue := Mode(os.Getenv(ModeEnv))
 	switch modeValue {
-	case configuration.Online:
-		config.Mode = configuration.Online
+	case Online:
+		config.Mode = Online
 		config.IndexerPath = path.Join(baseDirectory, indexerPath)
 		if err := ensurePathExists(config.IndexerPath); err != nil {
 			return nil, fmt.Errorf("%w: unable to create indexer path", err)
@@ -91,24 +147,24 @@ func LoadConfiguration(baseDirectory string) (*configuration.Configuration, erro
 		if err := ensurePathExists(config.BitcoindPath); err != nil {
 			return nil, fmt.Errorf("%w: unable to create bitcoind path", err)
 		}
-	case configuration.Offline:
-		config.Mode = configuration.Offline
+	case Offline:
+		config.Mode = Offline
 	case "":
 		return nil, errors.New("MODE must be populated")
 	default:
 		return nil, fmt.Errorf("%s is not a valid mode", modeValue)
 	}
 
-	networkValue := os.Getenv(configuration.NetworkEnv)
+	networkValue := os.Getenv(NetworkEnv)
 	switch networkValue {
-	case configuration.Mainnet:
+	case Mainnet:
 		config.Network = &types.NetworkIdentifier{
-			Blockchain: Blockchain,
-			Network:    MainnetNetwork,
+			Blockchain: bitcoin.Blockchain,
+			Network:    bitcoin.MainnetNetwork,
 		}
-		config.GenesisBlockIdentifier = MainnetGenesisBlockIdentifier
-		config.Params = MainnetParams
-		config.Currency = MainnetCurrency
+		config.GenesisBlockIdentifier = bitcoin.MainnetGenesisBlockIdentifier
+		config.Params = bitcoin.MainnetParams
+		config.Currency = bitcoin.MainnetCurrency
 		config.ConfigPath = mainnetConfigPath
 		config.RPCPort = mainnetRPCPort
 		config.Compressors = []*encoder.CompressorEntry{
@@ -117,14 +173,14 @@ func LoadConfiguration(baseDirectory string) (*configuration.Configuration, erro
 				DictionaryPath: mainnetTransactionDictionary,
 			},
 		}
-	case configuration.Testnet:
+	case Testnet:
 		config.Network = &types.NetworkIdentifier{
-			Blockchain: Blockchain,
-			Network:    TestnetNetwork,
+			Blockchain: bitcoin.Blockchain,
+			Network:    bitcoin.TestnetNetwork,
 		}
-		config.GenesisBlockIdentifier = TestnetGenesisBlockIdentifier
-		config.Params = TestnetParams
-		config.Currency = TestnetCurrency
+		config.GenesisBlockIdentifier = bitcoin.TestnetGenesisBlockIdentifier
+		config.Params = bitcoin.TestnetParams
+		config.Currency = bitcoin.TestnetCurrency
 		config.ConfigPath = testnetConfigPath
 		config.RPCPort = testnetRPCPort
 		config.Compressors = []*encoder.CompressorEntry{
@@ -139,7 +195,7 @@ func LoadConfiguration(baseDirectory string) (*configuration.Configuration, erro
 		return nil, fmt.Errorf("%s is not a valid network", networkValue)
 	}
 
-	portValue := os.Getenv(configuration.PortEnv)
+	portValue := os.Getenv(PortEnv)
 	if len(portValue) == 0 {
 		return nil, errors.New("PORT must be populated")
 	}

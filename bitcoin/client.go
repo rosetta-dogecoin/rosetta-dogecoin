@@ -27,7 +27,7 @@ import (
 	"strconv"
 	"time"
 
-	bitcoinUtils "github.com/coinbase/rosetta-bitcoin/utils"
+	bitcoinUtils "github.com/rosetta-dogecoin/rosetta-dogecoin/utils"
 
 	"github.com/btcsuite/btcd/wire"
 	"github.com/btcsuite/btcutil"
