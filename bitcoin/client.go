@@ -399,7 +399,7 @@ func (b *Client) getBlock(
 		if err := b.post(ctx, requestMethodDecodeRawTransaction, params, txV); err != nil {
 			return nil, fmt.Errorf("%w: error decoding block with hexstring %s", err, hexstring)
 		}
-
+		txV.Result.Weight = txV.Result.Vsize * 4
 		txs = append(txs, txV.Result)
 	}
 
