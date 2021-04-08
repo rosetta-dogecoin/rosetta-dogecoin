@@ -24,8 +24,8 @@ import (
 	"math/big"
 	"strconv"
 
-	"github.com/coinbase/rosetta-bitcoin/bitcoin"
-	"github.com/coinbase/rosetta-bitcoin/configuration"
+	"github.com/rosetta-dogecoin/rosetta-dogecoin/bitcoin"
+	"github.com/rosetta-dogecoin/rosetta-dogecoin/configuration"
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 
 	"github.com/btcsuite/btcd/btcec"

@@ -17,6 +17,7 @@ package bitcoin
 import (
 	"bytes"
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -26,8 +27,9 @@ import (
 	"strconv"
 	"time"
 
-	bitcoinUtils "github.com/coinbase/rosetta-bitcoin/utils"
+	bitcoinUtils "github.com/rosetta-dogecoin/rosetta-dogecoin/utils"
 
+	"github.com/btcsuite/btcd/wire"
 	"github.com/btcsuite/btcutil"
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/coinbase/rosetta-sdk-go/utils"
@@ -46,11 +48,8 @@ const (
 	// jSONRPCVersion is the JSON-RPC version we use for making requests
 	jSONRPCVersion = "2.0"
 
-	// blockVerbosity represents the verbose level used when fetching blocks
-	// * 0 returns the hex representation
-	// * 1 returns the JSON representation
-	// * 2 returns the JSON representation with included Transaction data
-	blockVerbosity = 2
+	// weightMultiplier is the weight unit multipler
+	weightMultiplier = 4
 )
 
 type requestMethod string
@@ -70,6 +69,9 @@ const (
 
 	// https://developer.bitcoin.org/reference/rpc/pruneblockchain.html
 	requestMethodPruneBlockchain requestMethod = "pruneblockchain"
+
+	// https://bitcoin.org/en/developer-reference#decoderawtransaction
+	requestMethodDecodeRawTransaction requestMethod = "decoderawtransaction"
 
 	// https://developer.bitcoin.org/reference/rpc/sendrawtransaction.html
 	requestMethodSendRawTransaction requestMethod = "sendrawtransaction"
@@ -360,16 +362,65 @@ func (b *Client) getBlock(
 
 	// Parameters:
 	//   1. Block hash (string, required)
-	//   2. Verbosity (integer, optional, default=1)
-	// https://bitcoin.org/en/developer-reference#getblock
-	params := []interface{}{hash, blockVerbosity}
-
-	response := &blockResponse{}
-	if err := b.post(ctx, requestMethodGetBlock, params, response); err != nil {
+	//   2. Verbosity (bool, optional, default=false)
+	params := []interface{}{hash, true}
+	responseV1 := &blockResponseV1{}
+	if err := b.post(ctx, requestMethodGetBlock, params, responseV1); err != nil {
 		return nil, fmt.Errorf("%w: error fetching block by hash %s", err, hash)
 	}
+	// Parameters:
+	//   1. Block hash (string, required)
+	//   2. Verbosity (bool, optional, default=false)
+	params = []interface{}{hash, false}
+	responseV0 := &blockResponseV0{}
+	if err := b.post(ctx, requestMethodGetBlock, params, responseV0); err != nil {
+		return nil, fmt.Errorf("%w: error fetching block by hash %s", err, hash)
+	}
+	// Decode the serialized block hex to raw bytes
+	block, err := hex.DecodeString(responseV0.Result)
+	if err != nil {
+		return nil, err
+	}
+	// Deserialize the block
+	var msgBlock wire.MsgBlock
+	if err := msgBlock.Deserialize(bytes.NewReader(block)); err != nil {
+		return nil, err
+	}
 
-	return response.Result, nil
+	// Decode each transaction in the block and append results to txs
+	var txs []*Transaction
+	for _, tx := range msgBlock.Transactions {
+		buf := bytes.NewBuffer(make([]byte, 0, tx.SerializeSize()))
+		if err := tx.Serialize(buf); err != nil {
+			return nil, err
+		}
+		// Parameter:
+		//   1. hexstring (string, required)
+		hexstring := hex.EncodeToString(buf.Bytes())
+		params = []interface{}{hexstring}
+		txV := &decodeTransactionResponse{}
+		if err := b.post(ctx, requestMethodDecodeRawTransaction, params, txV); err != nil {
+			return nil, fmt.Errorf("%w: error decoding block with hexstring %s", err, hexstring)
+		}
+		txV.Result.Weight = txV.Result.Vsize * weightMultiplier
+		txs = append(txs, txV.Result)
+	}
+
+	return &Block{
+		Hash:              responseV1.Result.Hash,
+		Height:            responseV1.Result.Height,
+		PreviousBlockHash: responseV1.Result.PreviousBlockHash,
+		Time:              responseV1.Result.Time,
+		MedianTime:        responseV1.Result.MedianTime,
+		Nonce:             responseV1.Result.Nonce,
+		MerkleRoot:        responseV1.Result.MerkleRoot,
+		Version:           responseV1.Result.Version,
+		Size:              responseV1.Result.Size,
+		Weight:            responseV1.Result.Weight,
+		Bits:              responseV1.Result.Bits,
+		Difficulty:        responseV1.Result.Difficulty,
+		Txs:               txs,
+	}, nil
 }
 
 // getBlockchainInfo performs the `getblockchaininfo` JSON-RPC request

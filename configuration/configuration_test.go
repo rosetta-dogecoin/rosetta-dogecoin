@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package dogecoin
+package configuration
 
 import (
 	"errors"
@@ -20,7 +20,7 @@ import (
 	"path"
 	"testing"
 
-	"github.com/rosetta-dogecoin/rosetta-dogecoin/configuration"
+	"github.com/rosetta-dogecoin/rosetta-dogecoin/bitcoin"
 
 	"github.com/coinbase/rosetta-sdk-go/storage/encoder"
 	"github.com/coinbase/rosetta-sdk-go/types"
@@ -34,38 +34,38 @@ func TestLoadConfiguration(t *testing.T) {
 		Network string
 		Port    string
 
-		cfg *configuration.Configuration
+		cfg *Configuration
 		err error
 	}{
 		"no envs set": {
 			err: errors.New("MODE must be populated"),
 		},
 		"only mode set": {
-			Mode: string(configuration.Online),
+			Mode: string(Online),
 			err:  errors.New("NETWORK must be populated"),
 		},
 		"only mode and network set": {
-			Mode:    string(configuration.Online),
-			Network: configuration.Mainnet,
+			Mode:    string(Online),
+			Network: Mainnet,
 			err:     errors.New("PORT must be populated"),
 		},
 		"all set (mainnet)": {
-			Mode:    string(configuration.Online),
-			Network: configuration.Mainnet,
+			Mode:    string(Online),
+			Network: Mainnet,
 			Port:    "1000",
-			cfg: &configuration.Configuration{
-				Mode: configuration.Online,
+			cfg: &Configuration{
+				Mode: Online,
 				Network: &types.NetworkIdentifier{
-					Network:    MainnetNetwork,
-					Blockchain: Blockchain,
+					Network:    bitcoin.MainnetNetwork,
+					Blockchain: bitcoin.Blockchain,
 				},
-				Params:                 MainnetParams,
-				Currency:               MainnetCurrency,
-				GenesisBlockIdentifier: MainnetGenesisBlockIdentifier,
+				Params:                 bitcoin.MainnetParams,
+				Currency:               bitcoin.MainnetCurrency,
+				GenesisBlockIdentifier: bitcoin.MainnetGenesisBlockIdentifier,
 				Port:                   1000,
 				RPCPort:                mainnetRPCPort,
 				ConfigPath:             mainnetConfigPath,
-				Pruning: &configuration.PruningConfiguration{
+				Pruning: &PruningConfiguration{
 					Frequency: pruneFrequency,
 					Depth:     pruneDepth,
 					MinHeight: minPruneHeight,
@@ -79,22 +79,22 @@ func TestLoadConfiguration(t *testing.T) {
 			},
 		},
 		"all set (testnet)": {
-			Mode:    string(configuration.Online),
-			Network: configuration.Testnet,
+			Mode:    string(Online),
+			Network: Testnet,
 			Port:    "1000",
-			cfg: &configuration.Configuration{
-				Mode: configuration.Online,
+			cfg: &Configuration{
+				Mode: Online,
 				Network: &types.NetworkIdentifier{
-					Network:    TestnetNetwork,
-					Blockchain: Blockchain,
+					Network:    bitcoin.TestnetNetwork,
+					Blockchain: bitcoin.Blockchain,
 				},
-				Params:                 TestnetParams,
-				Currency:               TestnetCurrency,
-				GenesisBlockIdentifier: TestnetGenesisBlockIdentifier,
+				Params:                 bitcoin.TestnetParams,
+				Currency:               bitcoin.TestnetCurrency,
+				GenesisBlockIdentifier: bitcoin.TestnetGenesisBlockIdentifier,
 				Port:                   1000,
 				RPCPort:                testnetRPCPort,
 				ConfigPath:             testnetConfigPath,
-				Pruning: &configuration.PruningConfiguration{
+				Pruning: &PruningConfiguration{
 					Frequency: pruneFrequency,
 					Depth:     pruneDepth,
 					MinHeight: minPruneHeight,
@@ -109,19 +109,19 @@ func TestLoadConfiguration(t *testing.T) {
 		},
 		"invalid mode": {
 			Mode:    "bad mode",
-			Network: configuration.Testnet,
+			Network: Testnet,
 			Port:    "1000",
 			err:     errors.New("bad mode is not a valid mode"),
 		},
 		"invalid network": {
-			Mode:    string(configuration.Offline),
+			Mode:    string(Offline),
 			Network: "bad network",
 			Port:    "1000",
 			err:     errors.New("bad network is not a valid network"),
 		},
 		"invalid port": {
-			Mode:    string(configuration.Offline),
-			Network: configuration.Testnet,
+			Mode:    string(Offline),
+			Network: Testnet,
 			Port:    "bad port",
 			err:     errors.New("unable to parse port bad port"),
 		},
@@ -133,9 +133,9 @@ func TestLoadConfiguration(t *testing.T) {
 			assert.NoError(t, err)
 			defer utils.RemoveTempDir(newDir)
 
-			os.Setenv(configuration.ModeEnv, test.Mode)
-			os.Setenv(configuration.NetworkEnv, test.Network)
-			os.Setenv(configuration.PortEnv, test.Port)
+			os.Setenv(ModeEnv, test.Mode)
+			os.Setenv(NetworkEnv, test.Network)
+			os.Setenv(PortEnv, test.Port)
 
 			cfg, err := LoadConfiguration(newDir)
 			if test.err != nil {
@@ -143,7 +143,7 @@ func TestLoadConfiguration(t *testing.T) {
 				assert.Contains(t, err.Error(), test.err.Error())
 			} else {
 				test.cfg.IndexerPath = path.Join(newDir, "indexer")
-				test.cfg.BitcoindPath = path.Join(newDir, "dogecoind")
+				test.cfg.BitcoindPath = path.Join(newDir, "bitcoind")
 				assert.Equal(t, test.cfg, cfg)
 				assert.NoError(t, err)
 			}
