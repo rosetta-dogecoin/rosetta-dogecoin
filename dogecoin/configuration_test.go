@@ -21,7 +21,6 @@ import (
 	"testing"
 
 	"github.com/coinbase/rosetta-bitcoin/configuration"
-
 	"github.com/coinbase/rosetta-sdk-go/storage/encoder"
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/coinbase/rosetta-sdk-go/utils"

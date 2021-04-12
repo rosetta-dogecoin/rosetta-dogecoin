@@ -1,0 +1,57 @@
+{
+  "result": {
+    "hash": "6da6ef0eb0e2e1e150ed44c43f596b9552b221a4dda207535eca9c0ddb7a10d0",
+    "confirmations": 6105,
+    "strippedsize": 190,
+    "size": 190,
+    "weight": 760,
+    "height": 1000,
+    "version": 1,
+    "versionHex": "00000001",
+    "merkleroot": "9480ac41aac2674ac498849b9ab95661ee73fb372140e62c6e7a6fa29f5a09d1",
+    "tx": [
+      {
+        "txid": "9480ac41aac2674ac498849b9ab95661ee73fb372140e62c6e7a6fa29f5a09d1",
+        "hash": "9480ac41aac2674ac498849b9ab95661ee73fb372140e62c6e7a6fa29f5a09d1",
+        "version": 1,
+        "size": 109,
+        "vsize": 109,
+        "weight": 0,
+        "locktime": 0,
+        "vin": [
+          {
+            "coinbase": "04ca05a4520131062f503253482f",
+            "sequence": 4294967295
+          }
+        ],
+        "vout": [
+          {
+            "value": 185878.00000000,
+            "n": 0,
+            "scriptPubKey": {
+              "asm": "03236a82a90eda514a3373f1a13b349cbff983d00879023ce15ef5ff8c757aa7db OP_CHECKSIG",
+              "hex": "2103236a82a90eda514a3373f1a13b349cbff983d00879023ce15ef5ff8c757aa7dbac",
+              "reqSigs": 1,
+              "type": "pubkey",
+              "addresses": [
+                "DG3FAujuBTvozAU423arUKYnhQQa6XzWZ9"
+              ]
+            }
+          }
+        ],
+        "hex": "01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0e04ca05a4520131062f503253482fffffffff01005637cfe7100000232103236a82a90eda514a3373f1a13b349cbff983d00879023ce15ef5ff8c757aa7dbac00000000"
+      }
+    ],
+    "time": 1386481098,
+    "mediantime": 1386480992,
+    "nonce": 2308638208,
+    "bits": "1d03d07b",
+    "difficulty": 0.2621620216098152,
+    "chainwork": "0000000000000000000000000000000000000000000000000000001acdc1cefa",
+    "nTx": 1,
+    "previousblockhash": "172024fe6ffe31b206e159319ed391f6a532a69007c047e46d8bea06f89aae60",
+    "nextblockhash": "bbd5239ca89b58eb893e2bd3368943fb23fc147d7cad53638aa98b9f38c88a82"
+  },
+  "error": null,
+  "id": "curltest"
+}

@@ -218,7 +218,7 @@ var TestNet3Params = chaincfg.Params{
 
 	// Human-readable part for Bech32 encoded segwit addresses, as defined in
 	// BIP 173.
-	Bech32HRPSegwit: "tdge", // Planned for 0.21
+	Bech32HRPSegwit: "tb", // Planned for 0.21
 
 	// Address encoding magics
 	PubKeyHashAddrID:        0x71, // 113 starts with n
@@ -226,7 +226,12 @@ var TestNet3Params = chaincfg.Params{
 	PrivateKeyID:            0xf1, // 241 starts with 9 (uncompressed) or c (compressed)
 	WitnessPubKeyHashAddrID: 0x00, // Unimplemented
 	WitnessScriptHashAddrID: 0x00, // Unimplemented
-
+	/*PubKeyHashAddrID:        0x6f, // starts with m or n
+	ScriptHashAddrID:        0xc4, // starts with 2
+	WitnessPubKeyHashAddrID: 0x03, // starts with QW
+	WitnessScriptHashAddrID: 0x28, // starts with T7n
+	PrivateKeyID:            0xef, // starts with 9 (uncompressed) or c (compressed)
+	*/
 	// BIP32 hierarchical deterministic extended key magics
 	HDPublicKeyID:  [4]byte{0x04, 0x35, 0x87, 0xcf}, // starts with tpub
 	HDPrivateKeyID: [4]byte{0x04, 0x35, 0x83, 0x94}, // starts with tprv
