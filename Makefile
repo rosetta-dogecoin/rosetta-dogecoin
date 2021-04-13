@@ -1,9 +1,7 @@
 .PHONY: deps build run lint mocks run-mainnet-online run-mainnet-offline run-testnet-online \
-	run-testnet-offline check-comments add-license check-license shorten-lines test \
+	run-testnet-offline check-comments shorten-lines test \
 	coverage spellcheck salus build-local coverage-local format check-format
 
-ADDLICENSE_CMD=go run github.com/google/addlicense
-ADDLICENCE_SCRIPT=${ADDLICENSE_CMD} -c "Coinbase, Inc." -l "apache" -v
 SPELLCHECK_CMD=go run github.com/client9/misspell/cmd/misspell
 GOLINES_CMD=go run github.com/segmentio/golines
 GOLINT_CMD=go run golang.org/x/lint/golint
@@ -51,12 +49,6 @@ check-comments:
 lint: | check-comments
 	golangci-lint run --timeout 2m0s -v -E ${LINT_SETTINGS},gomnd
 
-add-license:
-	${ADDLICENCE_SCRIPT} .
-
-check-license:
-	${ADDLICENCE_SCRIPT} -check .
-
 shorten-lines:
 	${GOLINES_CMD} -w --shorten-comments ${GO_FOLDERS} .
 
@@ -87,4 +79,3 @@ mocks:
 	rm -rf mocks;
 	mockery --dir indexer --all --case underscore --outpkg indexer --output mocks/indexer;
 	mockery --dir services --all --case underscore --outpkg services --output mocks/services;
-	${ADDLICENCE_SCRIPT} .;

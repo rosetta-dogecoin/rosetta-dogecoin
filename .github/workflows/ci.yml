@@ -80,16 +80,6 @@ jobs:
       run: |
         ! go run golang.org/x/tools/cmd/goimports -l . | read
 
-  license:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/setup-go@v2
-      with:
-        go-version: '1.15'
-    - uses: actions/checkout@v2
-    - name: Check license
-      run: go run github.com/google/addlicense -c "Coinbase, Inc." -l "apache" -v -check .
-
   salus:
     runs-on: ubuntu-latest
     steps:
