@@ -29,7 +29,6 @@ import (
 
 	bitcoinUtils "github.com/rosetta-dogecoin/rosetta-dogecoin/utils"
 
-	"github.com/btcsuite/btcd/wire"
 	"github.com/btcsuite/btcutil"
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/coinbase/rosetta-sdk-go/utils"
@@ -382,7 +381,7 @@ func (b *Client) getBlock(
 		return nil, err
 	}
 	// Deserialize the block
-	var msgBlock wire.MsgBlock
+	var msgBlock AuxBlock
 	if err := msgBlock.Deserialize(bytes.NewReader(block)); err != nil {
 		return nil, err
 	}

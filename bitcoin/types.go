@@ -194,7 +194,7 @@ type Block struct {
 	Txs []*Transaction `json:"tx"`
 }
 
-// Block is a raw Bitcoin block (with verbosity == 1).
+// BlockV1 is a raw Bitcoin block (with verbosity == 1).
 type BlockV1 struct {
 	Hash              string  `json:"hash"`
 	Height            int64   `json:"height"`
