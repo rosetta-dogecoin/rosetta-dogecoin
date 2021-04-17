@@ -17,7 +17,7 @@ package services
 import (
 	"context"
 
-	"github.com/rosetta-dogecoin/rosetta-dogecoin/configuration"
+	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 
 	"github.com/coinbase/rosetta-sdk-go/server"
 	"github.com/coinbase/rosetta-sdk-go/types"
@@ -25,13 +25,13 @@ import (
 
 // MempoolAPIService implements the server.MempoolAPIServicer interface.
 type MempoolAPIService struct {
-	config *configuration.Configuration
+	config *dogecoin.Configuration
 	client Client
 }
 
 // NewMempoolAPIService creates a new instance of a MempoolAPIService.
 func NewMempoolAPIService(
-	config *configuration.Configuration,
+	config *dogecoin.Configuration,
 	client Client,
 ) server.MempoolAPIServicer {
 	return &MempoolAPIService{
@@ -45,7 +45,7 @@ func (s *MempoolAPIService) Mempool(
 	ctx context.Context,
 	request *types.NetworkRequest,
 ) (*types.MempoolResponse, *types.Error) {
-	if s.config.Mode != configuration.Online {
+	if s.config.Mode != dogecoin.Online {
 		return nil, wrapErr(ErrUnavailableOffline, nil)
 	}
 
@@ -69,7 +69,7 @@ func (s *MempoolAPIService) MempoolTransaction(
 	ctx context.Context,
 	request *types.MempoolTransactionRequest,
 ) (*types.MempoolTransactionResponse, *types.Error) {
-	if s.config.Mode != configuration.Online {
+	if s.config.Mode != dogecoin.Online {
 		return nil, wrapErr(ErrUnavailableOffline, nil)
 	}
 

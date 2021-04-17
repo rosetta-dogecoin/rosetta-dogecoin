@@ -78,7 +78,7 @@ func handleSignals(ctx context.Context, listeners []context.CancelFunc) {
 func startOnlineDependencies(
 	ctx context.Context,
 	cancel context.CancelFunc,
-	cfg *configuration.Configuration,
+	cfg *dogecoin.Configuration,
 	g *errgroup.Group,
 ) (*bitcoin.Client, *indexer.Indexer, error) {
 	client := bitcoin.NewClient(
@@ -144,7 +144,7 @@ func main() {
 
 	var i *indexer.Indexer
 	var client *bitcoin.Client
-	if cfg.Mode == configuration.Online {
+	if cfg.Mode == dogecoin.Online {
 		client, i, err = startOnlineDependencies(ctx, cancel, cfg, g)
 		if err != nil {
 			logger.Fatalw("unable to start online dependencies", "error", err)

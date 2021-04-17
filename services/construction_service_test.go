@@ -20,7 +20,6 @@ import (
 	"testing"
 
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/bitcoin"
-	"github.com/rosetta-dogecoin/rosetta-dogecoin/configuration"
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 	mocks "github.com/rosetta-dogecoin/rosetta-dogecoin/mocks/services"
 
@@ -52,8 +51,8 @@ func TestConstructionService(t *testing.T) {
 		Blockchain: dogecoin.Blockchain,
 	}
 
-	cfg := &configuration.Configuration{
-		Mode:     configuration.Online,
+	cfg := &dogecoin.Configuration{
+		Mode:     dogecoin.Online,
 		Network:  networkIdentifier,
 		Params:   dogecoin.TestnetParams,
 		Currency: dogecoin.TestnetCurrency,

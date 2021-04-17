@@ -24,7 +24,6 @@ import (
 	"time"
 
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/bitcoin"
-	"github.com/rosetta-dogecoin/rosetta-dogecoin/configuration"
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 	mocks "github.com/rosetta-dogecoin/rosetta-dogecoin/mocks/indexer"
 
@@ -58,13 +57,13 @@ func TestIndexer_Pruning(t *testing.T) {
 	mockClient := &mocks.Client{}
 	pruneDepth := int64(10)
 	minHeight := int64(200)
-	cfg := &configuration.Configuration{
+	cfg := &dogecoin.Configuration{
 		Network: &types.NetworkIdentifier{
 			Network:    dogecoin.MainnetNetwork,
 			Blockchain: dogecoin.Blockchain,
 		},
 		GenesisBlockIdentifier: dogecoin.MainnetGenesisBlockIdentifier,
-		Pruning: &configuration.PruningConfiguration{
+		Pruning: &dogecoin.PruningConfiguration{
 			Frequency: 50 * time.Millisecond,
 			Depth:     pruneDepth,
 			MinHeight: minHeight,
@@ -223,7 +222,7 @@ func TestIndexer_Transactions(t *testing.T) {
 	defer utils.RemoveTempDir(newDir)
 
 	mockClient := &mocks.Client{}
-	cfg := &configuration.Configuration{
+	cfg := &dogecoin.Configuration{
 		Network: &types.NetworkIdentifier{
 			Network:    dogecoin.MainnetNetwork,
 			Blockchain: dogecoin.Blockchain,
@@ -441,7 +440,7 @@ func TestIndexer_Reorg(t *testing.T) {
 	defer utils.RemoveTempDir(newDir)
 
 	mockClient := &mocks.Client{}
-	cfg := &configuration.Configuration{
+	cfg := &dogecoin.Configuration{
 		Network: &types.NetworkIdentifier{
 			Network:    dogecoin.MainnetNetwork,
 			Blockchain: dogecoin.Blockchain,
@@ -683,7 +682,7 @@ func TestIndexer_HeaderReorg(t *testing.T) {
 	defer utils.RemoveTempDir(newDir)
 
 	mockClient := &mocks.Client{}
-	cfg := &configuration.Configuration{
+	cfg := &dogecoin.Configuration{
 		Network: &types.NetworkIdentifier{
 			Network:    dogecoin.MainnetNetwork,
 			Blockchain: dogecoin.Blockchain,

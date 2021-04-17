@@ -18,7 +18,7 @@ import (
 	"context"
 
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/bitcoin"
-	"github.com/rosetta-dogecoin/rosetta-dogecoin/configuration"
+	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 
 	"github.com/coinbase/rosetta-sdk-go/server"
 	"github.com/coinbase/rosetta-sdk-go/types"
@@ -26,14 +26,14 @@ import (
 
 // NetworkAPIService implements the server.NetworkAPIServicer interface.
 type NetworkAPIService struct {
-	config *configuration.Configuration
+	config *dogecoin.Configuration
 	client Client
 	i      Indexer
 }
 
 // NewNetworkAPIService creates a new instance of a NetworkAPIService.
 func NewNetworkAPIService(
-	config *configuration.Configuration,
+	config *dogecoin.Configuration,
 	client Client,
 	i Indexer,
 ) server.NetworkAPIServicer {
@@ -61,7 +61,7 @@ func (s *NetworkAPIService) NetworkStatus(
 	ctx context.Context,
 	request *types.NetworkRequest,
 ) (*types.NetworkStatusResponse, *types.Error) {
-	if s.config.Mode != configuration.Online {
+	if s.config.Mode != dogecoin.Online {
 		return nil, wrapErr(ErrUnavailableOffline, nil)
 	}
 

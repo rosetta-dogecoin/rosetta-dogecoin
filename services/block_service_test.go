@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/rosetta-dogecoin/rosetta-dogecoin/configuration"
+	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 	mocks "github.com/rosetta-dogecoin/rosetta-dogecoin/mocks/services"
 
 	"github.com/coinbase/rosetta-sdk-go/types"
@@ -27,8 +27,8 @@ import (
 )
 
 func TestBlockService_Offline(t *testing.T) {
-	cfg := &configuration.Configuration{
-		Mode: configuration.Offline,
+	cfg := &dogecoin.Configuration{
+		Mode: dogecoin.Offline,
 	}
 	mockIndexer := &mocks.Indexer{}
 	servicer := NewBlockAPIService(cfg, mockIndexer)
@@ -48,8 +48,8 @@ func TestBlockService_Offline(t *testing.T) {
 }
 
 func TestBlockService_Online_Inline(t *testing.T) {
-	cfg := &configuration.Configuration{
-		Mode: configuration.Online,
+	cfg := &dogecoin.Configuration{
+		Mode: dogecoin.Online,
 	}
 	mockIndexer := &mocks.Indexer{}
 	servicer := NewBlockAPIService(cfg, mockIndexer)
@@ -149,8 +149,8 @@ func TestBlockService_Online_Inline(t *testing.T) {
 }
 
 func TestBlockService_Online_External(t *testing.T) {
-	cfg := &configuration.Configuration{
-		Mode: configuration.Online,
+	cfg := &dogecoin.Configuration{
+		Mode: dogecoin.Online,
 	}
 	mockIndexer := &mocks.Indexer{}
 	servicer := NewBlockAPIService(cfg, mockIndexer)

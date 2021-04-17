@@ -17,7 +17,7 @@ package services
 import (
 	"context"
 
-	"github.com/rosetta-dogecoin/rosetta-dogecoin/configuration"
+	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 
 	"github.com/coinbase/rosetta-sdk-go/server"
 	"github.com/coinbase/rosetta-sdk-go/types"
@@ -25,13 +25,13 @@ import (
 
 // BlockAPIService implements the server.BlockAPIServicer interface.
 type BlockAPIService struct {
-	config *configuration.Configuration
+	config *dogecoin.Configuration
 	i      Indexer
 }
 
 // NewBlockAPIService creates a new instance of a BlockAPIService.
 func NewBlockAPIService(
-	config *configuration.Configuration,
+	config *dogecoin.Configuration,
 	i Indexer,
 ) server.BlockAPIServicer {
 	return &BlockAPIService{
@@ -45,7 +45,7 @@ func (s *BlockAPIService) Block(
 	ctx context.Context,
 	request *types.BlockRequest,
 ) (*types.BlockResponse, *types.Error) {
-	if s.config.Mode != configuration.Online {
+	if s.config.Mode != dogecoin.Online {
 		return nil, wrapErr(ErrUnavailableOffline, nil)
 	}
 
@@ -84,7 +84,7 @@ func (s *BlockAPIService) BlockTransaction(
 	ctx context.Context,
 	request *types.BlockTransactionRequest,
 ) (*types.BlockTransactionResponse, *types.Error) {
-	if s.config.Mode != configuration.Online {
+	if s.config.Mode != dogecoin.Online {
 		return nil, wrapErr(ErrUnavailableOffline, nil)
 	}
 

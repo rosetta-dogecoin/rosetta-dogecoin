@@ -19,7 +19,6 @@ import (
 	"testing"
 
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/bitcoin"
-	"github.com/rosetta-dogecoin/rosetta-dogecoin/configuration"
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 	mocks "github.com/rosetta-dogecoin/rosetta-dogecoin/mocks/services"
 
@@ -50,8 +49,8 @@ var (
 )
 
 func TestNetworkEndpoints_Offline(t *testing.T) {
-	cfg := &configuration.Configuration{
-		Mode:    configuration.Offline,
+	cfg := &dogecoin.Configuration{
+		Mode:    dogecoin.Offline,
 		Network: networkIdentifier,
 	}
 	mockIndexer := &mocks.Indexer{}
@@ -79,8 +78,8 @@ func TestNetworkEndpoints_Offline(t *testing.T) {
 }
 
 func TestNetworkEndpoints_Online(t *testing.T) {
-	cfg := &configuration.Configuration{
-		Mode:                   configuration.Online,
+	cfg := &dogecoin.Configuration{
+		Mode:                   dogecoin.Online,
 		Network:                networkIdentifier,
 		GenesisBlockIdentifier: dogecoin.MainnetGenesisBlockIdentifier,
 	}

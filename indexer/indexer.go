@@ -23,7 +23,7 @@ import (
 	"time"
 
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/bitcoin"
-	"github.com/rosetta-dogecoin/rosetta-dogecoin/configuration"
+	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/services"
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/utils"
 
@@ -97,7 +97,7 @@ type Indexer struct {
 	cancel context.CancelFunc
 
 	network       *types.NetworkIdentifier
-	pruningConfig *configuration.PruningConfiguration
+	pruningConfig *dogecoin.PruningConfiguration
 
 	client Client
 
@@ -189,7 +189,7 @@ func defaultBadgerOptions(
 func Initialize(
 	ctx context.Context,
 	cancel context.CancelFunc,
-	config *configuration.Configuration,
+	config *dogecoin.Configuration,
 	client Client,
 ) (*Indexer, error) {
 	localStore, err := database.NewBadgerDatabase(

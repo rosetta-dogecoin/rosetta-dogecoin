@@ -17,7 +17,7 @@ package services
 import (
 	"context"
 
-	"github.com/rosetta-dogecoin/rosetta-dogecoin/configuration"
+	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 
 	"github.com/coinbase/rosetta-sdk-go/server"
 	"github.com/coinbase/rosetta-sdk-go/types"
@@ -25,13 +25,13 @@ import (
 
 // AccountAPIService implements the server.AccountAPIServicer interface.
 type AccountAPIService struct {
-	config *configuration.Configuration
+	config *dogecoin.Configuration
 	i      Indexer
 }
 
 // NewAccountAPIService returns a new *AccountAPIService.
 func NewAccountAPIService(
-	config *configuration.Configuration,
+	config *dogecoin.Configuration,
 	i Indexer,
 ) server.AccountAPIServicer {
 	return &AccountAPIService{
@@ -45,7 +45,7 @@ func (s *AccountAPIService) AccountBalance(
 	ctx context.Context,
 	request *types.AccountBalanceRequest,
 ) (*types.AccountBalanceResponse, *types.Error) {
-	if s.config.Mode != configuration.Online {
+	if s.config.Mode != dogecoin.Online {
 		return nil, wrapErr(ErrUnavailableOffline, nil)
 	}
 
@@ -76,7 +76,7 @@ func (s *AccountAPIService) AccountCoins(
 	ctx context.Context,
 	request *types.AccountCoinsRequest,
 ) (*types.AccountCoinsResponse, *types.Error) {
-	if s.config.Mode != configuration.Online {
+	if s.config.Mode != dogecoin.Online {
 		return nil, wrapErr(ErrUnavailableOffline, nil)
 	}
 

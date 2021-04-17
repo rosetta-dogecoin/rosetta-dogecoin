@@ -18,7 +18,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/rosetta-dogecoin/rosetta-dogecoin/configuration"
+	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 	mocks "github.com/rosetta-dogecoin/rosetta-dogecoin/mocks/services"
 
 	"github.com/coinbase/rosetta-sdk-go/types"
@@ -26,8 +26,8 @@ import (
 )
 
 func TestMempoolEndpoints_Offline(t *testing.T) {
-	cfg := &configuration.Configuration{
-		Mode: configuration.Offline,
+	cfg := &dogecoin.Configuration{
+		Mode: dogecoin.Offline,
 	}
 	mockClient := &mocks.Client{}
 	servicer := NewMempoolAPIService(cfg, mockClient)
@@ -45,8 +45,8 @@ func TestMempoolEndpoints_Offline(t *testing.T) {
 }
 
 func TestMempoolEndpoints_Online(t *testing.T) {
-	cfg := &configuration.Configuration{
-		Mode: configuration.Online,
+	cfg := &dogecoin.Configuration{
+		Mode: dogecoin.Online,
 	}
 
 	mockClient := &mocks.Client{}

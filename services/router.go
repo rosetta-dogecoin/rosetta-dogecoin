@@ -17,7 +17,7 @@ package services
 import (
 	"net/http"
 
-	"github.com/rosetta-dogecoin/rosetta-dogecoin/configuration"
+	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 
 	"github.com/coinbase/rosetta-sdk-go/asserter"
 	"github.com/coinbase/rosetta-sdk-go/server"
@@ -26,7 +26,7 @@ import (
 // NewBlockchainRouter creates a Mux http.Handler from a collection
 // of server controllers.
 func NewBlockchainRouter(
-	config *configuration.Configuration,
+	config *dogecoin.Configuration,
 	client Client,
 	i Indexer,
 	asserter *asserter.Asserter,

@@ -25,7 +25,6 @@ import (
 	"strconv"
 
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/bitcoin"
-	"github.com/rosetta-dogecoin/rosetta-dogecoin/configuration"
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 
 	"github.com/btcsuite/btcd/btcec"
@@ -49,14 +48,14 @@ const (
 
 // ConstructionAPIService implements the server.ConstructionAPIServicer interface.
 type ConstructionAPIService struct {
-	config *configuration.Configuration
+	config *dogecoin.Configuration
 	client Client
 	i      Indexer
 }
 
 // NewConstructionAPIService creates a new instance of a ConstructionAPIService.
 func NewConstructionAPIService(
-	config *configuration.Configuration,
+	config *dogecoin.Configuration,
 	client Client,
 	i Indexer,
 ) server.ConstructionAPIServicer {
@@ -175,7 +174,7 @@ func (s *ConstructionAPIService) ConstructionMetadata(
 	ctx context.Context,
 	request *types.ConstructionMetadataRequest,
 ) (*types.ConstructionMetadataResponse, *types.Error) {
-	if s.config.Mode != configuration.Online {
+	if s.config.Mode != dogecoin.Online {
 		return nil, wrapErr(ErrUnavailableOffline, nil)
 	}
 
@@ -756,7 +755,7 @@ func (s *ConstructionAPIService) ConstructionSubmit(
 	ctx context.Context,
 	request *types.ConstructionSubmitRequest,
 ) (*types.TransactionIdentifierResponse, *types.Error) {
-	if s.config.Mode != configuration.Online {
+	if s.config.Mode != dogecoin.Online {
 		return nil, wrapErr(ErrUnavailableOffline, nil)
 	}
 

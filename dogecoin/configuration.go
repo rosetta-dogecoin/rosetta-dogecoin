@@ -24,11 +24,29 @@ import (
 
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/configuration"
 
+	"github.com/btcsuite/btcd/chaincfg"
 	"github.com/coinbase/rosetta-sdk-go/storage/encoder"
 	"github.com/coinbase/rosetta-sdk-go/types"
 )
 
+// Mode is the setting that determines if
+// the implementation is "online" or "offline".
+type Mode string
+
 const (
+	// Online is when the implementation is permitted
+	// to make outbound connections.
+	Online Mode = "ONLINE"
+
+	// Offline is when the implementation is not permitted
+	// to make outbound connections.
+	Offline Mode = "OFFLINE"
+
+	// Mainnet is the Bitcoin Mainnet.
+	Mainnet string = "MAINNET"
+
+	// Testnet is Bitcoin Testnet3.
+	Testnet string = "TESTNET"
 	// mainnetConfigPath is the path of the Bitcoin
 	// configuration file for mainnet.
 	mainnetConfigPath = "/app/bitcoin-mainnet.conf"
@@ -68,20 +86,44 @@ const (
 	allFilePermissions = 0777
 )
 
+// PruningConfiguration is the configuration to
+// use for pruning in the indexer.
+type PruningConfiguration struct {
+	Frequency time.Duration
+	Depth     int64
+	MinHeight int64
+}
+
+// Configuration determines how
+type Configuration struct {
+	Mode                   Mode
+	Network                *types.NetworkIdentifier
+	Params                 *chaincfg.Params
+	Currency               *types.Currency
+	GenesisBlockIdentifier *types.BlockIdentifier
+	Port                   int
+	RPCPort                int
+	ConfigPath             string
+	Pruning                *PruningConfiguration
+	IndexerPath            string
+	BitcoindPath           string
+	Compressors            []*encoder.CompressorEntry
+}
+
 // LoadConfiguration attempts to create a new Configuration
 // using the ENVs in the environment.
-func LoadConfiguration(baseDirectory string) (*configuration.Configuration, error) {
-	config := &configuration.Configuration{}
-	config.Pruning = &configuration.PruningConfiguration{
+func LoadConfiguration(baseDirectory string) (*Configuration, error) {
+	config := &Configuration{}
+	config.Pruning = &PruningConfiguration{
 		Frequency: pruneFrequency,
 		Depth:     pruneDepth,
 		MinHeight: minPruneHeight,
 	}
 
-	modeValue := configuration.Mode(os.Getenv(configuration.ModeEnv))
+	modeValue := Mode(os.Getenv(configuration.ModeEnv))
 	switch modeValue {
-	case configuration.Online:
-		config.Mode = configuration.Online
+	case Online:
+		config.Mode = Online
 		config.IndexerPath = path.Join(baseDirectory, indexerPath)
 		if err := ensurePathExists(config.IndexerPath); err != nil {
 			return nil, fmt.Errorf("%w: unable to create indexer path", err)
@@ -91,8 +133,8 @@ func LoadConfiguration(baseDirectory string) (*configuration.Configuration, erro
 		if err := ensurePathExists(config.BitcoindPath); err != nil {
 			return nil, fmt.Errorf("%w: unable to create bitcoind path", err)
 		}
-	case configuration.Offline:
-		config.Mode = configuration.Offline
+	case Offline:
+		config.Mode = Offline
 	case "":
 		return nil, errors.New("MODE must be populated")
 	default:
@@ -101,7 +143,7 @@ func LoadConfiguration(baseDirectory string) (*configuration.Configuration, erro
 
 	networkValue := os.Getenv(configuration.NetworkEnv)
 	switch networkValue {
-	case configuration.Mainnet:
+	case Mainnet:
 		config.Network = &types.NetworkIdentifier{
 			Blockchain: Blockchain,
 			Network:    MainnetNetwork,
@@ -117,7 +159,7 @@ func LoadConfiguration(baseDirectory string) (*configuration.Configuration, erro
 				DictionaryPath: mainnetTransactionDictionary,
 			},
 		}
-	case configuration.Testnet:
+	case Testnet:
 		config.Network = &types.NetworkIdentifier{
 			Blockchain: Blockchain,
 			Network:    TestnetNetwork,
