@@ -130,7 +130,7 @@ func main() {
 
 	logger := loggerRaw.Sugar().Named("main")
 
-	cfg, err := dogecoin.LoadConfiguration(configuration.DataDirectory)
+	cfg, err := configuration.LoadConfiguration(configuration.DataDirectory)
 	if err != nil {
 		logger.Fatalw("unable to load configuration", "error", err)
 	}
