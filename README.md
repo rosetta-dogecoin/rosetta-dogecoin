@@ -1,22 +1,17 @@
 Dogecoin Rosetta API implementation
 ====================================
 
+<p align="right">
 <a href="https://github.com/rosetta-dogecoin/rosetta-dogecoin/actions/workflows/ci.yml"><img src="https://github.com/rosetta-dogecoin/rosetta-dogecoin/actions/workflows/ci.yml/badge.svg" /></a>
-
-<!--
-<p align="center">
-  <a href="https://circleci.com/gh/coinbase/rosetta-bitcoin/tree/master"><img src="https://circleci.com/gh/coinbase/rosetta-bitcoin/tree/master.svg?style=shield" /></a>
-  <a href="https://coveralls.io/github/coinbase/rosetta-bitcoin"><img src="https://coveralls.io/repos/github/coinbase/rosetta-bitcoin/badge.svg" /></a>
-  <a href="https://goreportcard.com/report/github.com/coinbase/rosetta-bitcoin"><img src="https://goreportcard.com/badge/github.com/coinbase/rosetta-bitcoin" /></a>
-  <a href="https://github.com/coinbase/rosetta-bitcoin/blob/master/LICENSE.txt"><img src="https://img.shields.io/github/license/coinbase/rosetta-bitcoin.svg" /></a>
-  <a href="https://pkg.go.dev/github.com/coinbase/rosetta-bitcoin?tab=overview"><img src="https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white&style=shield" /></a>
+<a href="https://github.com/coinbase/rosetta-bitcoin/blob/master/LICENSE.txt"><img src="https://img.shields.io/github/license/coinbase/rosetta-bitcoin.svg" /></a>
 </p>
--->
+
 
 <p align="center"><b>
 ROSETTA-DOGECOIN IS UNDER INITIAL DEVELOPMENT AND IF IT IS NOT BROKEN, THIS IS ACCIDENTAL.
 DO NOT USE THIS SOFTWARE, YET.
 </b></p>
+
 
 ## Overview
 `rosetta-dogecoin` provides an implementation of the Rosetta API for
@@ -24,12 +19,7 @@ Dogecoin in golang, based off the [rosetta-bitcoin](https://github.com/coinbase/
 reference implementation provided by Coinbase. If you haven't heard of the
 Rosetta API, you can find more information [here](https://rosetta-api.org).
 
-## Target features for v1.0
-* Rosetta API implementation (both Data API and Construction API)
-* UTXO cache for all accounts (accessible using `/account/balance`)
-<!--* Stateless, offline, curve-based transaction construction from any SegWit-Bech32 Address-->
 
-<!--
 ## Usage
 As specified in the [Rosetta API Principles](https://www.rosetta-api.org/docs/automated_deployment.html),
 all Rosetta implementations must be deployable via Docker and support running via either an
@@ -49,7 +39,8 @@ curl -sSfL https://raw.githubusercontent.com/rosetta-dogecoin/rosetta-dogecoin/m
 _Do not try to install rosetta-dogecoin using GitHub Packages!_
 
 #### From Source
-After cloning this repository, run:
+The following command will build a Docker image named `rosetta-dogecoin:latest` in the root directory of the project.
+
 ```text
 make build-local
 ```
@@ -57,168 +48,50 @@ make build-local
 ### Run
 Running the following commands will start a Docker container in
 [detached mode](https://docs.docker.com/engine/reference/run/#detached--d) with
-a data directory at `<working directory>/bitcoin-data` and the Rosetta API accessible
-at port `8080`.
+a data directory at `dogecoin-data/` and the Rosetta API accessible
+at port `8080` for **online** modes and `8081` for **offline** modes..
+
+*You can list your running containers by running `docker container ls`.*
 
 #### Mainnet:Online
-```text
-docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8333:8333 rosetta-bitcoin:latest
-```
-_If you cloned the repository, you can run `make run-mainnet-online`._
+`make run-mainnet-online`
 
 #### Mainnet:Offline
-```text
-docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-bitcoin:latest
-```
-_If you cloned the repository, you can run `make run-mainnet-offline`._
+`make run-mainnet-offline`
 
 #### Testnet:Online
-```text
-docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 18333:18333 rosetta-bitcoin:latest
-```
-_If you cloned the repository, you can run `make run-testnet-online`._
+`make run-testnet-online`
 
 #### Testnet:Offline
-```text
-docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-bitcoin:latest
-```
-_If you cloned the repository, you can run `make run-testnet-offline`._
+`make run-testnet-offline`
 
-## System Requirements
-`rosetta-bitcoin` has been tested on an [AWS c5.2xlarge instance](https://aws.amazon.com/ec2/instance-types/c5).
-This instance type has 8 vCPU and 16 GB of RAM.
 
-### Network Settings
-To increase the load `rosetta-bitcoin` can handle, it is recommended to tune your OS
-settings to allow for more connections. On a linux-based OS, you can run the following
-commands ([source](http://www.tweaked.io/guide/kernel)):
-```text
-sysctl -w net.ipv4.tcp_tw_reuse=1
-sysctl -w net.core.rmem_max=16777216
-sysctl -w net.core.wmem_max=16777216
-sysctl -w net.ipv4.tcp_max_syn_backlog=10000
-sysctl -w net.core.somaxconn=10000
-sysctl -p (when done)
-```
-_We have not tested `rosetta-bitcoin` with `net.ipv4.tcp_tw_recycle` and do not recommend
-enabling it._
+## Testing
 
-You should also modify your open file settings to `100000`. This can be done on a linux-based OS
-with the command: `ulimit -n 100000`.
+We use [`rosetta-cli`](https://github.com/coinbase/rosetta-cli) to ensure we maintain [Rosetta API](https://www.rosetta-api.org/docs/welcome.html) standards.
 
-### Memory-Mapped Files
+## Target Architecture
+`rosetta-dogecoin` plans to use the `syncer`, `storage`, `parser`, and `server` package
+from [`rosetta-sdk-go`](https://github.com/coinbase/rosetta-sdk-go).
+
+![Rosetta API Architecture](./rosetta-api-arch.jpeg)
+
+## Performance and Efficiency
+
+### Use a 64-bit architecture
 `rosetta-bitcoin` uses [memory-mapped files](https://en.wikipedia.org/wiki/Memory-mapped_file) to
 persist data in the `indexer`. As a result, you **must** run `rosetta-bitcoin` on a 64-bit
 architecture (the virtual address space easily exceeds 100s of GBs).
 
+### Increase swap
 If you receive a kernel OOM, you may need to increase the allocated size of swap space
 on your OS. There is a great tutorial for how to do this on Linux [here](https://linuxize.com/post/create-a-linux-swap-file/).
 
--->
-
-## Target Architecture
-`rosetta-dogecoin` plans to use the `syncer`, `storage`, `parser`, and `server` package
-from [`rosetta-sdk-go`](https://github.com/coinbase/rosetta-sdk-go) instead
-of a new Dogecoin-specific implementation of packages of similar functionality. Below
-you can find a high-level overview of how everything fits together:
-```text
-                               +------------------------------------------------------------------+
-                               |                                                                  |
-                               |                 +--------------------------------------+         |
-                               |                 |                                      |         |
-                               |                 |                 indexer              |         |
-                               |                 |                                      |         |
-                               |                 | +--------+                           |         |
-                               +-------------------+ pruner <----------+                |         |
-                               |                 | +--------+          |                |         |
-                         +-----v-----+           |                     |                |         |
-                         | dogecoind |           |              +------+--------+       |         |
-                         +-----+-----+           |     +--------> block_storage <----+  |         |
-                               |                 |     |        +---------------+    |  |         |
-                               |                 | +---+----+                        |  |         |
-                               +-------------------> syncer |                        |  |         |
-                                                 | +---+----+                        |  |         |
-                                                 |     |        +--------------+     |  |         |
-                                                 |     +--------> coin_storage |     |  |         |
-                                                 |              +------^-------+     |  |         |
-                                                 |                     |             |  |         |
-                                                 +--------------------------------------+         |
-                                                                       |             |            |
-+-------------------------------------------------------------------------------------------+     |
-|                                                                      |             |      |     |
-|         +------------------------------------------------------------+             |      |     |
-|         |                                                                          |      |     |
-|         |                     +---------------------+-----------------------+------+      |     |
-|         |                     |                     |                       |             |     |
-| +-------+---------+   +-------+---------+   +-------+-------+   +-----------+----------+  |     |
-| | account_service |   | network_service |   | block_service |   | construction_service +--------+
-| +-----------------+   +-----------------+   +---------------+   +----------------------+  |
-|                                                                                           |
-|                                         server                                            |
-|                                                                                           |
-+-------------------------------------------------------------------------------------------+
-```
-
-<!--
 ### Optimizations
-* Automatically prune bitcoind while indexing blocks
+* Automatically prune dogecoind while indexing blocks
 * Reduce sync time with concurrent block indexing
 * Use [Zstandard compression](https://github.com/facebook/zstd) to reduce the size of data stored on disk
 without needing to write a manual byte-level encoding
-
-#### Concurrent Block Syncing
-To speed up indexing, `rosetta-bitcoin` uses concurrent block processing
-with a "wait free" design (using channels instead of sleeps to signal
-which threads are unblocked). This allows `rosetta-bitcoin` to fetch
-multiple inputs from disk while it waits for inputs that appeared
-in recently processed blocks to save to disk.
-```text
-                                                   +----------+
-                                                   | bitcoind |
-                                                   +-----+----+
-                                                         |
-                                                         |
-          +---------+ fetch block data / unpopulated txs |
-          | block 1 <------------------------------------+
-          +---------+                                    |
-       +--/>   tx 1  |                                    |
-       |  +---------+                                    |
-       |  |   tx 2  |                                    |
-       |  +----+----+                                    |
-       |       |                                         |
-       |       |           +---------+                   |
-       |       |           | block 2 <-------------------+
-       |       |           +---------+                   |
-       |       +-----------/>   tx 3  +--+                |
-       |                   +---------+  |                |
-       +-------------------/>   tx 4  |  |                |
-       |                   +---------+  |                |
-       |                                |                |
-       | retrieve previously synced     |   +---------+  |
-       | inputs needed for future       |   | block 3 <--+
-       | blocks while waiting for       |   +---------+
-       | populated blocks to save to    +---/>   tx 5  |
-       | disk                               +---------+
-       +------------------------------------/>   tx 6  |
-       |                                    +---------+
-       |
-       |
-+------+--------+
-|  coin_storage |
-+---------------+
-```
--->
-
-<!--
-## Future Work
-* Publish benchamrks for sync speed, storage usage, and load testing
-* [Rosetta API `/mempool/transaction`](https://www.rosetta-api.org/docs/MempoolApi.html#mempooltransaction) implementation
-* Add CI test using `rosetta-cli` to run on each PR (likely on a regtest network)
-* Add performance mode to use unlimited RAM (implementation currently optimized to use <= 16 GB of RAM)
-* Support Multi-Sig Sends
-
-_Please reach out on our [community](https://community.rosetta-api.org) if you want to tackle anything on this list!_
--->
 
 
 ## Development
@@ -250,7 +123,7 @@ https://golang.org/doc/install
 
 #### Running
 
-`MODE=OFFLINE NETWORK=TESTNET PORT=8080 ./rosetta-dogecoin -d`
+`make run-testnet-online`
 
 ## Testing
 
