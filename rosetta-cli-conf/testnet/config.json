@@ -11,7 +11,7 @@
   "memory_limit_disabled": true,
   "compression_disabled": true,
   "construction": {
-    "constructor_dsl_file": "bitcoin.ros",
+    "constructor_dsl_file": "dogecoin.ros",
     "end_conditions": {
       "create_account": 10,
       "transfer": 10
