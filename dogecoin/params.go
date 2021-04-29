@@ -53,7 +53,7 @@ const (
 // MainNetParams defines the network parameters for the main Bitcoin network.
 var MainNetParams = chaincfg.Params{
 	Name:        "mainnet",
-	Net:         wire.MainNet,
+	Net:         MainNet,
 	DefaultPort: "22556",
 	DNSSeeds: []chaincfg.DNSSeed{
 		{Host: "seed.multidoge.org", HasFiltering: true},
@@ -148,7 +148,7 @@ var MainNetParams = chaincfg.Params{
 // network is sometimes simply called "testnet".
 var TestNet3Params = chaincfg.Params{
 	Name:        "testnet3",
-	Net:         wire.TestNet3,
+	Net:         TestNet3,
 	DefaultPort: "44556",
 	DNSSeeds: []chaincfg.DNSSeed{
 		{Host: "testseed.jrn.me.uk", HasFiltering: false},
@@ -256,4 +256,20 @@ func newHashFromStr(hexStr string) *chainhash.Hash {
 		panic(err)
 	}
 	return hash
+}
+
+// mustRegister performs the same function as Register except it panics if there
+// is an error.  This should only be called from package init functions.
+//
+// Copied from btcd/chaincfg (it is not exported)
+func mustRegister(params *chaincfg.Params) {
+	if err := chaincfg.Register(params); err != nil {
+		panic("failed to register network: " + err.Error())
+	}
+}
+
+func init() {
+	// Register all Dogecoin networks when the package is initialized.
+	mustRegister(&MainNetParams)
+	mustRegister(&TestNet3Params)
 }
