@@ -48,7 +48,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
     - name: Run tests
-      run: go test ${{ env.GO_PACKAGES }}
+      run: make test
 
   lint:
     runs-on: ubuntu-latest
