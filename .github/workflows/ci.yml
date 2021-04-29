@@ -16,11 +16,6 @@ name: CI
 
 on: [push, pull_request]
 
-env:
-  GO_PACKAGES: ./services/... ./indexer/... ./bitcoin/... ./dogecoin/...
-  GOLANGCI_LINT_VERSION: v1.32.2
-  GOLANGCI_LINT_SETTINGS: golint,misspell,gocyclo,gocritic,whitespace,goconst,gocognit,bodyclose,unconvert,lll,unparam
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -57,14 +52,8 @@ jobs:
       with:
         go-version: '1.15'
     - uses: actions/checkout@v2
-    - name: Run golint
-      run: |
-        export GO_FOLDERS=$(shell echo ${{ env.GO_PACKAGES }} | sed -e "s/\.\///g" | sed -e "s/\/\.\.\.//g")
-        go run golang.org/x/lint/golint -set_exit_status ${GO_FOLDERS} .
     - name: Run golangci-lint
-      run: |
-        curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin ${{ env.GOLANGCI_LINT_VERSION }}
-        golangci-lint run --timeout 2m0s -v -E ${{ env.GOLANGCI_LINT_SETTINGS }},gomnd
+      run: make lint
 
   format:
     runs-on: ubuntu-latest
