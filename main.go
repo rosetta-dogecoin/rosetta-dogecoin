@@ -36,6 +36,7 @@ import (
 	"github.com/coinbase/rosetta-sdk-go/server"
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/zap/ctxzap"
+	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 )
@@ -53,10 +54,15 @@ const (
 	// idleTimeout is the maximum amount of time to wait for the
 	// next request when keep-alives are enabled.
 	idleTimeout = 30 * time.Second
+
+	// default data directory
+	defaultDataDirectory = "/data"
 )
 
 var (
 	signalReceived = false
+
+	dataDirectory string
 )
 
 // handleSignals handles OS signals so we can ensure we close database
@@ -114,6 +120,10 @@ func startOnlineDependencies(
 }
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Print("Error loading .env file", err)
+	}
+
 	loggerRaw, err := zap.NewDevelopment()
 	if err != nil {
 		log.Fatalf("can't initialize zap logger: %v", err)
@@ -130,7 +140,12 @@ func main() {
 
 	logger := loggerRaw.Sugar().Named("main")
 
-	cfg, err := dogecoin.LoadConfiguration(configuration.DataDirectory)
+	dataDirectory = os.Getenv("DATA_DIR")
+	if len(dataDirectory) == 0 {
+		dataDirectory = defaultDataDirectory
+	}
+
+	cfg, err := dogecoin.LoadConfiguration(dataDirectory)
 	if err != nil {
 		logger.Fatalw("unable to load configuration", "error", err)
 	}

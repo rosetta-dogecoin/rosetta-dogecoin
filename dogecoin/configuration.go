@@ -30,18 +30,8 @@ import (
 )
 
 const (
-	// mainnetConfigPath is the path of the Bitcoin
-	// configuration file for mainnet.
-	mainnetConfigPath = "/app/bitcoin-mainnet.conf"
-
-	// testnetConfigPath is the path of the Bitcoin
-	// configuration file for testnet.
-	testnetConfigPath = "/app/bitcoin-testnet.conf"
-
 	// Zstandard compression dictionaries
-	transactionNamespace         = "transaction"
-	testnetTransactionDictionary = "/app/testnet-transaction.zstd"
-	mainnetTransactionDictionary = "/app/mainnet-transaction.zstd"
+	transactionNamespace = "transaction"
 
 	mainnetRPCPort = 22555
 	testnetRPCPort = 44555
@@ -57,21 +47,36 @@ const (
 	// attempt to prune once an hour
 	pruneFrequency = 60 * time.Minute
 
-	// DataDirectory is the default location for all
-	// persistent data.
-	DataDirectory = "/data"
-
 	bitcoindPath = "dogecoind"
 	indexerPath  = "indexer"
 
 	// allFilePermissions specifies anyone can do anything
 	// to the file.
 	allFilePermissions = 0777
+
+	// defaults
+	defaultConfigurationDirectory = "/app"
+
+	mainnetConfigFile = "bitcoin-mainnet.conf"
+	testnetConfigFile = "bitcoin-testnet.conf"
+	mainnetTxDict     = "mainnet-transaction.zstd"
+	testnetTxDict     = "testnet-transaction.zstd"
+)
+
+var (
+	// configurationDirectory is the configuration path prefix
+	configurationDirectory string
 )
 
 // LoadConfiguration attempts to create a new Configuration
 // using the ENVs in the environment.
 func LoadConfiguration(baseDirectory string) (*configuration.Configuration, error) {
+	configurationDirectory = os.Getenv("CONFIG_DIR")
+
+	if len(configurationDirectory) == 0 {
+		configurationDirectory = defaultConfigurationDirectory
+	}
+
 	config := &configuration.Configuration{}
 	config.Pruning = &configuration.PruningConfiguration{
 		Frequency: pruneFrequency,
@@ -110,12 +115,12 @@ func LoadConfiguration(baseDirectory string) (*configuration.Configuration, erro
 		config.GenesisBlockIdentifier = MainnetGenesisBlockIdentifier
 		config.Params = MainnetParams
 		config.Currency = MainnetCurrency
-		config.ConfigPath = mainnetConfigPath
+		config.ConfigPath = configurationDirectory + "/" + mainnetConfigFile
 		config.RPCPort = mainnetRPCPort
 		config.Compressors = []*encoder.CompressorEntry{
 			{
 				Namespace:      transactionNamespace,
-				DictionaryPath: mainnetTransactionDictionary,
+				DictionaryPath: configurationDirectory + "/" + mainnetTxDict,
 			},
 		}
 	case configuration.Testnet:
@@ -126,12 +131,12 @@ func LoadConfiguration(baseDirectory string) (*configuration.Configuration, erro
 		config.GenesisBlockIdentifier = TestnetGenesisBlockIdentifier
 		config.Params = TestnetParams
 		config.Currency = TestnetCurrency
-		config.ConfigPath = testnetConfigPath
+		config.ConfigPath = configurationDirectory + "/" + testnetConfigFile
 		config.RPCPort = testnetRPCPort
 		config.Compressors = []*encoder.CompressorEntry{
 			{
 				Namespace:      transactionNamespace,
-				DictionaryPath: testnetTransactionDictionary,
+				DictionaryPath: configurationDirectory + "/" + testnetTxDict,
 			},
 		}
 	case "":
