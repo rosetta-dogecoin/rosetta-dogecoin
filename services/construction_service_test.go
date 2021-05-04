@@ -22,7 +22,6 @@ import (
 
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/bitcoin"
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/configuration"
-	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 	mocks "github.com/rosetta-dogecoin/rosetta-dogecoin/mocks/services"
 
 	"github.com/coinbase/rosetta-sdk-go/types"
@@ -49,15 +48,15 @@ func forceMarshalMap(t *testing.T, i interface{}) map[string]interface{} {
 
 func TestConstructionService(t *testing.T) {
 	networkIdentifier = &types.NetworkIdentifier{
-		Network:    dogecoin.TestnetNetwork,
-		Blockchain: dogecoin.Blockchain,
+		Network:    configuration.TestnetNetwork,
+		Blockchain: configuration.Blockchain,
 	}
 
 	cfg := &configuration.Configuration{
 		Mode:     configuration.Online,
 		Network:  networkIdentifier,
-		Params:   dogecoin.TestnetParams,
-		Currency: dogecoin.TestnetCurrency,
+		Params:   configuration.TestnetParams,
+		Currency: configuration.TestnetCurrency,
 	}
 
 	mockIndexer := &mocks.Indexer{}
@@ -96,7 +95,7 @@ func TestConstructionService(t *testing.T) {
 			},
 			Amount: &types.Amount{
 				Value:    "-1000000",
-				Currency: dogecoin.TestnetCurrency,
+				Currency: configuration.TestnetCurrency,
 			},
 			CoinChange: &types.CoinChange{
 				CoinIdentifier: &types.CoinIdentifier{
@@ -115,7 +114,7 @@ func TestConstructionService(t *testing.T) {
 			},
 			Amount: &types.Amount{
 				Value:    "954843",
-				Currency: dogecoin.TestnetCurrency,
+				Currency: configuration.TestnetCurrency,
 			},
 		},
 		{
@@ -128,7 +127,7 @@ func TestConstructionService(t *testing.T) {
 			},
 			Amount: &types.Amount{
 				Value:    "44657",
-				Currency: dogecoin.TestnetCurrency,
+				Currency: configuration.TestnetCurrency,
 			},
 		},
 	}
@@ -150,7 +149,7 @@ func TestConstructionService(t *testing.T) {
 				},
 				Amount: &types.Amount{
 					Value:    "-1000000",
-					Currency: dogecoin.TestnetCurrency,
+					Currency: configuration.TestnetCurrency,
 				},
 			},
 		},
@@ -203,7 +202,7 @@ func TestConstructionService(t *testing.T) {
 		SuggestedFee: []*types.Amount{
 			{
 				Value:    "1065", // 1,420 * 0.75
-				Currency: dogecoin.TestnetCurrency,
+				Currency: configuration.TestnetCurrency,
 			},
 		},
 	}, metadataResponse)
@@ -235,7 +234,7 @@ func TestConstructionService(t *testing.T) {
 		SuggestedFee: []*types.Amount{
 			{
 				Value:    "142", // we don't go below minimum fee rate
-				Currency: dogecoin.TestnetCurrency,
+				Currency: configuration.TestnetCurrency,
 			},
 		},
 	}, metadataResponse)
@@ -261,7 +260,7 @@ func TestConstructionService(t *testing.T) {
 			},
 			Amount: &types.Amount{
 				Value:    "-1000000",
-				Currency: dogecoin.TestnetCurrency,
+				Currency: configuration.TestnetCurrency,
 			},
 			CoinChange: &types.CoinChange{
 				CoinIdentifier: &types.CoinIdentifier{
@@ -281,7 +280,7 @@ func TestConstructionService(t *testing.T) {
 			},
 			Amount: &types.Amount{
 				Value:    "954843",
-				Currency: dogecoin.TestnetCurrency,
+				Currency: configuration.TestnetCurrency,
 			},
 		},
 		{
@@ -295,7 +294,7 @@ func TestConstructionService(t *testing.T) {
 			},
 			Amount: &types.Amount{
 				Value:    "44657",
-				Currency: dogecoin.TestnetCurrency,
+				Currency: configuration.TestnetCurrency,
 			},
 		},
 	}

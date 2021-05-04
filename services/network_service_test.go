@@ -21,7 +21,6 @@ import (
 
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/bitcoin"
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/configuration"
-	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 	mocks "github.com/rosetta-dogecoin/rosetta-dogecoin/mocks/services"
 
 	"github.com/coinbase/rosetta-sdk-go/types"
@@ -45,8 +44,8 @@ var (
 	}
 
 	networkIdentifier = &types.NetworkIdentifier{
-		Network:    dogecoin.MainnetNetwork,
-		Blockchain: dogecoin.Blockchain,
+		Network:    configuration.MainnetNetwork,
+		Blockchain: configuration.Blockchain,
 	}
 )
 
@@ -83,7 +82,7 @@ func TestNetworkEndpoints_Online(t *testing.T) {
 	cfg := &configuration.Configuration{
 		Mode:                   configuration.Online,
 		Network:                networkIdentifier,
-		GenesisBlockIdentifier: dogecoin.MainnetGenesisBlockIdentifier,
+		GenesisBlockIdentifier: configuration.MainnetGenesisBlockIdentifier,
 	}
 	mockIndexer := &mocks.Indexer{}
 	mockClient := &mocks.Client{}
@@ -120,7 +119,7 @@ func TestNetworkEndpoints_Online(t *testing.T) {
 	networkStatus, err := servicer.NetworkStatus(ctx, nil)
 	assert.Nil(t, err)
 	assert.Equal(t, &types.NetworkStatusResponse{
-		GenesisBlockIdentifier: dogecoin.MainnetGenesisBlockIdentifier,
+		GenesisBlockIdentifier: configuration.MainnetGenesisBlockIdentifier,
 		CurrentBlockIdentifier: blockResponse.Block.BlockIdentifier,
 		Peers: []*types.Peer{
 			{
