@@ -49,7 +49,6 @@ var (
 
 func TestIndexer_Pruning(t *testing.T) {
 	// Create Indexer
-	ctx := context.Background()
 	ctx, cancel := context.WithCancel(context.Background())
 
 	newDir, err := utils.CreateTempDir()
@@ -216,7 +215,6 @@ func TestIndexer_Pruning(t *testing.T) {
 
 func TestIndexer_Transactions(t *testing.T) {
 	// Create Indexer
-	ctx := context.Background()
 	ctx, cancel := context.WithCancel(context.Background())
 
 	newDir, err := utils.CreateTempDir()
@@ -434,7 +432,6 @@ func TestIndexer_Transactions(t *testing.T) {
 
 func TestIndexer_Reorg(t *testing.T) {
 	// Create Indexer
-	ctx := context.Background()
 	ctx, cancel := context.WithCancel(context.Background())
 
 	newDir, err := utils.CreateTempDir()
@@ -676,7 +673,6 @@ func TestIndexer_Reorg(t *testing.T) {
 
 func TestIndexer_HeaderReorg(t *testing.T) {
 	// Create Indexer
-	ctx := context.Background()
 	ctx, cancel := context.WithCancel(context.Background())
 
 	newDir, err := utils.CreateTempDir()

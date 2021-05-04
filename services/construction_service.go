@@ -27,7 +27,6 @@ import (
 
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/bitcoin"
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/configuration"
-	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 
 	"github.com/btcsuite/btcd/btcec"
 	"github.com/btcsuite/btcd/txscript"
@@ -199,7 +198,7 @@ func (s *ConstructionAPIService) ConstructionMetadata(
 	}
 
 	// Calculated the estimated fee in Satoshis
-	satoshisPerB := (feePerKB * float64(dogecoin.SatoshisInBitcoin)) / bytesInKb
+	satoshisPerB := (feePerKB * float64(configuration.SatoshisInBitcoin)) / bytesInKb
 	estimatedFee := satoshisPerB * options.EstimatedSize
 	suggestedFee := &types.Amount{
 		Value:    fmt.Sprintf("%d", int64(estimatedFee)),
