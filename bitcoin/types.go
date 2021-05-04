@@ -235,6 +235,10 @@ func (b *Block) UnmarshalJSON(data []byte) error {
 	b.Difficulty = res.Difficulty
 
 	var txs []*Transaction
+	if len(res.Txs) < 1 {
+		return fmt.Errorf("expected >= 1 transactions in block, got %d", len(res.Txs))
+	}
+
 	switch res.Txs[0].(type) {
 	case string:
 	case interface{}:
@@ -246,6 +250,7 @@ func (b *Block) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	}
+
 	b.Txs = txs
 	return nil
 }
