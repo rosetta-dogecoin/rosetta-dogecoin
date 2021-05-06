@@ -16,6 +16,7 @@
 package bitcoin
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -177,8 +178,8 @@ type PeerInfo struct {
 	SyncedHeaders  int64  `json:"synced_headers"`
 }
 
-// Block is a raw Bitcoin block (with verbosity == 2).
-type Block struct {
+// BlockJSON is a raw Bitcoin block (with verbosity == 1).
+type BlockJSON struct {
 	Hash              string  `json:"hash"`
 	Height            int64   `json:"height"`
 	PreviousBlockHash string  `json:"previousblockhash"`
@@ -192,25 +193,66 @@ type Block struct {
 	Bits              string  `json:"bits"`
 	Difficulty        float64 `json:"difficulty"`
 
-	Txs []*Transaction `json:"tx"`
+	Txs []interface{} `json:"tx"`
 }
 
-// BlockV1 is a raw Bitcoin block (with verbosity == 1).
-type BlockV1 struct {
-	Hash              string  `json:"hash"`
-	Height            int64   `json:"height"`
-	PreviousBlockHash string  `json:"previousblockhash"`
-	Time              int64   `json:"time"`
-	MedianTime        int64   `json:"mediantime"`
-	Nonce             int64   `json:"nonce"`
-	MerkleRoot        string  `json:"merkleroot"`
-	Version           int32   `json:"version"`
-	Size              int64   `json:"size"`
-	Weight            int64   `json:"weight"`
-	Bits              string  `json:"bits"`
-	Difficulty        float64 `json:"difficulty"`
+// Block is a raw Bitcoin block (with verbosity == 1).
+type Block struct {
+	Hash              string
+	Height            int64
+	PreviousBlockHash string
+	Time              int64
+	MedianTime        int64
+	Nonce             int64
+	MerkleRoot        string
+	Version           int32
+	Size              int64
+	Weight            int64
+	Bits              string
+	Difficulty        float64
 
-	Txs []string `json:"tx"`
+	Txs []*Transaction
+}
+
+// UnmarshalJSON block data to determine txs type
+func (b *Block) UnmarshalJSON(data []byte) error {
+	var res BlockJSON
+	if err := json.Unmarshal(data, &res); err != nil {
+		return nil
+	}
+
+	b.Hash = res.Hash
+	b.Height = res.Height
+	b.PreviousBlockHash = res.PreviousBlockHash
+	b.Time = res.Time
+	b.MedianTime = res.MedianTime
+	b.Nonce = res.Nonce
+	b.MerkleRoot = res.MerkleRoot
+	b.Version = res.Version
+	b.Size = res.Size
+	b.Weight = res.Weight
+	b.Bits = res.Bits
+	b.Difficulty = res.Difficulty
+
+	var txs []*Transaction
+	if len(res.Txs) < 1 {
+		return fmt.Errorf("expected >= 1 transactions in block, got %d", len(res.Txs))
+	}
+
+	switch res.Txs[0].(type) {
+	case string:
+	case interface{}:
+		enc, err := json.Marshal(res.Txs)
+		if err != nil {
+			return nil
+		}
+		if err := json.Unmarshal(enc, &txs); err != nil {
+			return err
+		}
+	}
+
+	b.Txs = txs
+	return nil
 }
 
 // Metadata returns the metadata for a block.
@@ -359,13 +401,13 @@ type responseError struct {
 	Message string `json:"message"`
 }
 
-// blockResponseV0 is the response body for `getblock` requests (with verbosity == 0)
-type blockResponseV0 struct {
+// stringResponse is the response body for requests (with verbosity == 0)
+type stringResponse struct {
 	Result string         `json:"result"`
 	Error  *responseError `json:"error"`
 }
 
-func (b blockResponseV0) Err() error {
+func (b stringResponse) Err() error {
 	if b.Error == nil {
 		return nil
 	}
@@ -382,13 +424,13 @@ func (b blockResponseV0) Err() error {
 	)
 }
 
-// blockResponseV1 is the response body for `getblock` requests (verbosity == 1)
-type blockResponseV1 struct {
-	Result *BlockV1       `json:"result"`
+// blockResponse is the response body for `getblock` requests (verbosity == 1)
+type blockResponse struct {
+	Result *Block         `json:"result"`
 	Error  *responseError `json:"error"`
 }
 
-func (b blockResponseV1) Err() error {
+func (b blockResponse) Err() error {
 	if b.Error == nil {
 		return nil
 	}
