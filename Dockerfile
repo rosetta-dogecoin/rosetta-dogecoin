@@ -42,7 +42,7 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y curl make gcc g++
 ENV GOLANG_VERSION 1.16.2
-ENV GOLANG_DOWNLOAD_SHA256 9a58494e8da722c3aef248c9227b0e9c528c7318309827780f16220998180a0d
+ENV GOLANG_DOWNLOAD_SHA256 951a3c7c6ce4e56ad883f97d9db74d3d6d80d5fec77455c6ada6c1f7ac4776d2
 ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
 
 RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
