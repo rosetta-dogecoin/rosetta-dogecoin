@@ -240,7 +240,7 @@ However, if you prefer not to use Docker during development in your own fork (e.
 
 #### Dependencies
 
-Download and install the latest (current **1.16.2**) version of Go.
+Download and install the latest (current **1.16.3**) version of Go.
 
 https://golang.org/doc/install
 
