@@ -20,7 +20,6 @@ import (
 	"testing"
 
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/configuration"
-	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 	mocks "github.com/rosetta-dogecoin/rosetta-dogecoin/mocks/services"
 
 	"github.com/coinbase/rosetta-sdk-go/types"
@@ -49,7 +48,7 @@ func TestAccountBalance_Offline(t *testing.T) {
 func TestAccountBalance_Online_Current(t *testing.T) {
 	cfg := &configuration.Configuration{
 		Mode:     configuration.Online,
-		Currency: dogecoin.MainnetCurrency,
+		Currency: configuration.MainnetCurrency,
 	}
 	mockIndexer := &mocks.Indexer{}
 	servicer := NewAccountAPIService(cfg, mockIndexer)
@@ -63,14 +62,14 @@ func TestAccountBalance_Online_Current(t *testing.T) {
 	}
 	amount := &types.Amount{
 		Value:    "25",
-		Currency: dogecoin.MainnetCurrency,
+		Currency: configuration.MainnetCurrency,
 	}
 
 	mockIndexer.On(
 		"GetBalance",
 		ctx,
 		account,
-		dogecoin.MainnetCurrency,
+		configuration.MainnetCurrency,
 		(*types.PartialBlockIdentifier)(nil),
 	).Return(amount, block, nil).Once()
 	bal, err := servicer.AccountBalance(ctx, &types.AccountBalanceRequest{
@@ -90,7 +89,7 @@ func TestAccountBalance_Online_Current(t *testing.T) {
 func TestAccountBalance_Online_Historical(t *testing.T) {
 	cfg := &configuration.Configuration{
 		Mode:     configuration.Online,
-		Currency: dogecoin.MainnetCurrency,
+		Currency: configuration.MainnetCurrency,
 	}
 	mockIndexer := &mocks.Indexer{}
 	servicer := NewAccountAPIService(cfg, mockIndexer)
@@ -107,14 +106,14 @@ func TestAccountBalance_Online_Historical(t *testing.T) {
 	}
 	amount := &types.Amount{
 		Value:    "25",
-		Currency: dogecoin.MainnetCurrency,
+		Currency: configuration.MainnetCurrency,
 	}
 
 	mockIndexer.On(
 		"GetBalance",
 		ctx,
 		account,
-		dogecoin.MainnetCurrency,
+		configuration.MainnetCurrency,
 		partialBlock,
 	).Return(amount, block, nil).Once()
 	bal, err := servicer.AccountBalance(ctx, &types.AccountBalanceRequest{
@@ -135,7 +134,7 @@ func TestAccountBalance_Online_Historical(t *testing.T) {
 func TestAccountCoins_Online(t *testing.T) {
 	cfg := &configuration.Configuration{
 		Mode:     configuration.Online,
-		Currency: dogecoin.MainnetCurrency,
+		Currency: configuration.MainnetCurrency,
 	}
 	mockIndexer := &mocks.Indexer{}
 	servicer := NewAccountAPIService(cfg, mockIndexer)

@@ -26,7 +26,6 @@ import (
 
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/bitcoin"
 	"github.com/rosetta-dogecoin/rosetta-dogecoin/configuration"
-	"github.com/rosetta-dogecoin/rosetta-dogecoin/dogecoin"
 	mocks "github.com/rosetta-dogecoin/rosetta-dogecoin/mocks/indexer"
 
 	"github.com/coinbase/rosetta-sdk-go/types"
@@ -49,7 +48,6 @@ var (
 
 func TestIndexer_Pruning(t *testing.T) {
 	// Create Indexer
-	ctx := context.Background()
 	ctx, cancel := context.WithCancel(context.Background())
 
 	newDir, err := utils.CreateTempDir()
@@ -61,10 +59,10 @@ func TestIndexer_Pruning(t *testing.T) {
 	minHeight := int64(200)
 	cfg := &configuration.Configuration{
 		Network: &types.NetworkIdentifier{
-			Network:    dogecoin.MainnetNetwork,
-			Blockchain: dogecoin.Blockchain,
+			Network:    configuration.MainnetNetwork,
+			Blockchain: configuration.Blockchain,
 		},
-		GenesisBlockIdentifier: dogecoin.MainnetGenesisBlockIdentifier,
+		GenesisBlockIdentifier: configuration.MainnetGenesisBlockIdentifier,
 		Pruning: &configuration.PruningConfiguration{
 			Frequency: 50 * time.Millisecond,
 			Depth:     pruneDepth,
@@ -85,7 +83,7 @@ func TestIndexer_Pruning(t *testing.T) {
 		CurrentBlockIdentifier: &types.BlockIdentifier{
 			Index: 1000,
 		},
-		GenesisBlockIdentifier: dogecoin.MainnetGenesisBlockIdentifier,
+		GenesisBlockIdentifier: configuration.MainnetGenesisBlockIdentifier,
 	}, nil)
 
 	// Timeout on first request
@@ -216,7 +214,6 @@ func TestIndexer_Pruning(t *testing.T) {
 
 func TestIndexer_Transactions(t *testing.T) {
 	// Create Indexer
-	ctx := context.Background()
 	ctx, cancel := context.WithCancel(context.Background())
 
 	newDir, err := utils.CreateTempDir()
@@ -226,10 +223,10 @@ func TestIndexer_Transactions(t *testing.T) {
 	mockClient := &mocks.Client{}
 	cfg := &configuration.Configuration{
 		Network: &types.NetworkIdentifier{
-			Network:    dogecoin.MainnetNetwork,
-			Blockchain: dogecoin.Blockchain,
+			Network:    configuration.MainnetNetwork,
+			Blockchain: configuration.Blockchain,
 		},
-		GenesisBlockIdentifier: dogecoin.MainnetGenesisBlockIdentifier,
+		GenesisBlockIdentifier: configuration.MainnetGenesisBlockIdentifier,
 		IndexerPath:            newDir,
 	}
 
@@ -241,7 +238,7 @@ func TestIndexer_Transactions(t *testing.T) {
 		CurrentBlockIdentifier: &types.BlockIdentifier{
 			Index: 1000,
 		},
-		GenesisBlockIdentifier: dogecoin.MainnetGenesisBlockIdentifier,
+		GenesisBlockIdentifier: configuration.MainnetGenesisBlockIdentifier,
 	}, nil)
 
 	// Add blocks
@@ -294,7 +291,7 @@ func TestIndexer_Transactions(t *testing.T) {
 						},
 						Amount: &types.Amount{
 							Value:    fmt.Sprintf("%d", rand.Intn(1000)),
-							Currency: dogecoin.TestnetCurrency,
+							Currency: configuration.TestnetCurrency,
 						},
 						CoinChange: &types.CoinChange{
 							CoinAction: types.CoinCreated,
@@ -409,7 +406,7 @@ func TestIndexer_Transactions(t *testing.T) {
 						CoinIdentifier: &types.CoinIdentifier{Identifier: k},
 						Amount: &types.Amount{
 							Value:    fmt.Sprintf("-%s", v.Coin.Amount.Value),
-							Currency: dogecoin.TestnetCurrency,
+							Currency: configuration.TestnetCurrency,
 						},
 					})
 					expectedPubKeys = append(expectedPubKeys, v.Script)
@@ -434,7 +431,6 @@ func TestIndexer_Transactions(t *testing.T) {
 
 func TestIndexer_Reorg(t *testing.T) {
 	// Create Indexer
-	ctx := context.Background()
 	ctx, cancel := context.WithCancel(context.Background())
 
 	newDir, err := utils.CreateTempDir()
@@ -444,10 +440,10 @@ func TestIndexer_Reorg(t *testing.T) {
 	mockClient := &mocks.Client{}
 	cfg := &configuration.Configuration{
 		Network: &types.NetworkIdentifier{
-			Network:    dogecoin.MainnetNetwork,
-			Blockchain: dogecoin.Blockchain,
+			Network:    configuration.MainnetNetwork,
+			Blockchain: configuration.Blockchain,
 		},
-		GenesisBlockIdentifier: dogecoin.MainnetGenesisBlockIdentifier,
+		GenesisBlockIdentifier: configuration.MainnetGenesisBlockIdentifier,
 		IndexerPath:            newDir,
 	}
 
@@ -459,7 +455,7 @@ func TestIndexer_Reorg(t *testing.T) {
 		CurrentBlockIdentifier: &types.BlockIdentifier{
 			Index: 1000,
 		},
-		GenesisBlockIdentifier: dogecoin.MainnetGenesisBlockIdentifier,
+		GenesisBlockIdentifier: configuration.MainnetGenesisBlockIdentifier,
 	}, nil)
 
 	// Add blocks
@@ -513,7 +509,7 @@ func TestIndexer_Reorg(t *testing.T) {
 						},
 						Amount: &types.Amount{
 							Value:    fmt.Sprintf("%d", rand.Intn(1000)),
-							Currency: dogecoin.TestnetCurrency,
+							Currency: configuration.TestnetCurrency,
 						},
 						CoinChange: &types.CoinChange{
 							CoinAction: types.CoinCreated,
@@ -676,7 +672,6 @@ func TestIndexer_Reorg(t *testing.T) {
 
 func TestIndexer_HeaderReorg(t *testing.T) {
 	// Create Indexer
-	ctx := context.Background()
 	ctx, cancel := context.WithCancel(context.Background())
 
 	newDir, err := utils.CreateTempDir()
@@ -686,10 +681,10 @@ func TestIndexer_HeaderReorg(t *testing.T) {
 	mockClient := &mocks.Client{}
 	cfg := &configuration.Configuration{
 		Network: &types.NetworkIdentifier{
-			Network:    dogecoin.MainnetNetwork,
-			Blockchain: dogecoin.Blockchain,
+			Network:    configuration.MainnetNetwork,
+			Blockchain: configuration.Blockchain,
 		},
-		GenesisBlockIdentifier: dogecoin.MainnetGenesisBlockIdentifier,
+		GenesisBlockIdentifier: configuration.MainnetGenesisBlockIdentifier,
 		IndexerPath:            newDir,
 	}
 
@@ -701,7 +696,7 @@ func TestIndexer_HeaderReorg(t *testing.T) {
 		CurrentBlockIdentifier: &types.BlockIdentifier{
 			Index: 1000,
 		},
-		GenesisBlockIdentifier: dogecoin.MainnetGenesisBlockIdentifier,
+		GenesisBlockIdentifier: configuration.MainnetGenesisBlockIdentifier,
 	}, nil)
 
 	// Add blocks
