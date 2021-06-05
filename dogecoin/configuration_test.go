@@ -65,7 +65,7 @@ func TestLoadConfiguration(t *testing.T) {
 				GenesisBlockIdentifier: MainnetGenesisBlockIdentifier,
 				Port:                   1000,
 				RPCPort:                mainnetRPCPort,
-				ConfigPath:             mainnetConfigPath,
+				ConfigPath:             defaultConfigurationDirectory + "/" + mainnetConfigFile,
 				Pruning: &configuration.PruningConfiguration{
 					Frequency: pruneFrequency,
 					Depth:     pruneDepth,
@@ -74,7 +74,7 @@ func TestLoadConfiguration(t *testing.T) {
 				Compressors: []*encoder.CompressorEntry{
 					{
 						Namespace:      transactionNamespace,
-						DictionaryPath: mainnetTransactionDictionary,
+						DictionaryPath: defaultConfigurationDirectory + "/" + mainnetTxDict,
 					},
 				},
 			},
@@ -94,7 +94,7 @@ func TestLoadConfiguration(t *testing.T) {
 				GenesisBlockIdentifier: TestnetGenesisBlockIdentifier,
 				Port:                   1000,
 				RPCPort:                testnetRPCPort,
-				ConfigPath:             testnetConfigPath,
+				ConfigPath:             defaultConfigurationDirectory + "/" + testnetConfigFile,
 				Pruning: &configuration.PruningConfiguration{
 					Frequency: pruneFrequency,
 					Depth:     pruneDepth,
@@ -103,7 +103,7 @@ func TestLoadConfiguration(t *testing.T) {
 				Compressors: []*encoder.CompressorEntry{
 					{
 						Namespace:      transactionNamespace,
-						DictionaryPath: testnetTransactionDictionary,
+						DictionaryPath: defaultConfigurationDirectory + "/" + testnetTxDict,
 					},
 				},
 			},

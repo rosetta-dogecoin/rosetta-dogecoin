@@ -65,6 +65,7 @@ RUN cd src \
   && cd .. \
   && mv src/rosetta-dogecoin /app/rosetta-dogecoin \
   && mv src/assets/* /app \
+  && mv src/.env.dist /app/.env \
   && rm -rf src
 
 ## Build Final Image
