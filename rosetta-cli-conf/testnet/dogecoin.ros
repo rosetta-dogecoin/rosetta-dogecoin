@@ -168,7 +168,7 @@ return_funds(10){
     transfer_dry_run.network = {"network":"Testnet3", "blockchain":"Bitcoin"};
     currency = {"symbol":"tBTC", "decimals":8};
 
-    // We look for a sender that is able to pay the 
+    // We look for a sender that is able to pay the
     // max_fee_amount + min_utxo size (reserved_amount is max_fee_amount + min_utxo size).
     max_fee_amount = "1200";
     reserved_amount = "1800";
