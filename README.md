@@ -1,3 +1,13 @@
+<p align="center">
+  <a href="https://dogecoin.com">
+    <img height="30%" width="30%" alt="Rosetta" src="https://dogecoin.com/assets/img/doge.png">
+  </a>
+</p>
+<h3 align="center">
+   Dogecoin-Rosetta API
+</h3>
+<p align="center">
+
 Dogecoin Rosetta API implementation
 ====================================
 
